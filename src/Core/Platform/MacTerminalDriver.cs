@@ -255,8 +255,18 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
         public override String Name => "iTerm2";
         public override String ScriptName => "iTerm2";
 
+        // The real ancestry of an iTerm2 session (this Mac, 2026-10-14, iTerm2 3.7.4):
+        //   claude → -zsh → /usr/bin/login -fpl user …/iTerm.app/Contents/MacOS/ShellLauncher --launch_shell
+        //          → ~/Library/Application Support/iTerm2/iTermServer-3.7.4 … → …/iTerm.app/Contents/MacOS/iTerm2
+        // The first row that names the bundle is `login` (via ShellLauncher), so any path inside the
+        // bundle counts, not just the iTerm2 binary — matching that alone skipped every real session
+        // on the first device load. The session server lives OUTSIDE the bundle and, once iTerm2 has
+        // been quit and relaunched, is the only iTerm2 process left above a restored session; a
+        // session started with a custom command has no login row at all. So it counts too.
         public override Boolean Owns(String ownerCommand) =>
-            ownerCommand != null && ownerCommand.Contains("/iTerm.app/Contents/MacOS/iTerm2", StringComparison.Ordinal);
+            ownerCommand != null
+            && (ownerCommand.Contains("/iTerm.app/Contents/MacOS/", StringComparison.Ordinal)
+                || ownerCommand.Contains("/iTermServer-", StringComparison.Ordinal));
 
         // argv item 1 = target tty ("/dev/ttysNNN"), or "" to use iTerm2's current session.
         internal const String FocusGuard =

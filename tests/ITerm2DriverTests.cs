@@ -47,6 +47,44 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
  3701  2287 ttys000  claude
 ";
 
+        // The real tree on the owner's Mac (2026-10-14, iTerm2 3.7.4). iTerm2 runs every session
+        // under its session server so it survives a relaunch, and starts the shell through login
+        // and ShellLauncher. The first device load skipped this session: the matcher looked for
+        // the iTerm2 binary, and the first bundle-naming ancestor is the login row.
+        private const String RealITerm2Listing = @"
+    1     0 ??       /sbin/launchd
+26412     1 ??       /Users/ravi/Applications/iTerm.app/Contents/MacOS/iTerm2
+26420 26412 ??       /Users/ravi/Library/Application Support/iTerm2/iTermServer-3.7.4 /Users/ravi/Library/Application Support/iTerm2/iterm2-daemon
+26421 26420 ttys000  /usr/bin/login -fpl ravi /Users/ravi/Applications/iTerm.app/Contents/MacOS/ShellLauncher --launch_shell
+26423 26421 ttys000  -zsh
+26548 26423 ttys000  claude
+";
+
+        // After iTerm2 is quit and relaunched the server, and the restored session under it, are
+        // reparented to launchd; a session started with a custom command has no login row either.
+        private const String RestoredITerm2Listing = @"
+    1     0 ??       /sbin/launchd
+26420     1 ??       /Users/ravi/Library/Application Support/iTerm2/iTermServer-3.7.4 /Users/ravi/Library/Application Support/iTerm2/iterm2-daemon
+26423 26420 ttys000  /bin/zsh -l
+26548 26423 ttys000  claude
+";
+
+        [Theory]
+        [InlineData(RealITerm2Listing)]
+        [InlineData(RestoredITerm2Listing)]
+        public void A_real_iTerm2_session_is_found_through_its_login_and_server_rows(String listing)
+        {
+            var calls = new List<List<String>>();
+            var mac = Bridge(listing, calls);
+
+            var sessions = mac.DiscoverSessions();
+
+            Assert.Equal(new[] { "ttys000" }, sessions.ToArray());
+            Assert.Same(MacTerminalDriver.ITerm2, mac.DriverFor("ttys000"));
+            mac.InjectKey("ttys000", KeyStroke.Return);
+            Assert.Contains("tell application \"iTerm2\"", Script(calls.Single()));
+        }
+
         private static MacPlatformBridge Bridge(String listing, List<List<String>> calls, Func<List<String>, String> reply = null) =>
             new MacPlatformBridge(AgentProcessMatcher.ClaudeCode)
             {
@@ -421,6 +459,8 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         [InlineData("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal", "Terminal.app")]
         [InlineData("/Applications/iTerm.app/Contents/MacOS/iTerm2", "iTerm2")]
         [InlineData("/Users/me/Applications/iTerm.app/Contents/MacOS/iTerm2 -psn_0_123", "iTerm2")]   // a user-folder install, with args
+        [InlineData("/usr/bin/login -fpl me /Users/me/Applications/iTerm.app/Contents/MacOS/ShellLauncher --launch_shell", "iTerm2")]   // how iTerm2 really starts a shell
+        [InlineData("/Users/me/Library/Application Support/iTerm2/iTermServer-3.7.4 /Users/me/Library/Application Support/iTerm2/iterm2-daemon", "iTerm2")]   // the session server, outside the bundle
         [InlineData("/Applications/Ghostty.app/Contents/MacOS/ghostty", null)]
         [InlineData("/Applications/Warp.app/Contents/MacOS/stable", null)]
         [InlineData("/Applications/Visual Studio Code.app/Contents/MacOS/Electron", null)]

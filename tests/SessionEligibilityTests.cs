@@ -156,6 +156,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         [InlineData("/Applications/iTerm.app/Contents/MacOS/iTerm2", "iTerm")]
         [InlineData("/Applications/Visual Studio Code.app/Contents/MacOS/Electron", "Visual Studio Code")]
         [InlineData("/Applications/cmux.app/Contents/MacOS/cmux --flag", "cmux")]
+        [InlineData("/Users/ravi/Library/Application Support/iTerm2/iTermServer-3.7.4 /Users/ravi/Library/Application Support/iTerm2/iterm2-daemon", "iTerm2")]   // #128: outside any bundle
         public void The_owner_name_is_the_bundle_name_a_user_would_recognise(String command, String name)
         {
             Assert.Equal(name, AgentProcessWatcher.AppName(command));
