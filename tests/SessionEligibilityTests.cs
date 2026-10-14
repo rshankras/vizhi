@@ -41,11 +41,29 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         private static readonly Func<String, Boolean> TerminalOnly = MacPlatformBridge.IsTerminalApp;
 
         [Fact]
-        public void Only_the_terminal_app_session_gets_a_key()
+        public void With_the_terminal_app_only_filter_its_session_alone_gets_a_key()
         {
+            // The #29 shape, kept as a filter the tests can ask for: iTerm2 was a skipped session
+            // until #128 gave it a driver.
             var found = AgentProcessWatcher.Discover(Listing, AgentProcessMatcher.ClaudeCode, TerminalOnly);
 
             Assert.Equal(new[] { "ttys000" }, found.Ttys.OrderBy(t => t).ToArray());
+        }
+
+        [Fact]
+        public void By_default_the_terminal_app_and_iTerm2_sessions_get_keys_and_say_who_owns_them()
+        {
+            // The bridge's default filter is "some driver reaches it" (#128). The owner comes back
+            // with each eligible session so the bridge can route a press to the right application,
+            // and the applications seen running come back so the frontmost probe can ask only them.
+            var found = AgentProcessWatcher.Discover(Listing, AgentProcessMatcher.ClaudeCode, MacTerminalDriver.IsDrivable);
+
+            Assert.Equal(new[] { "ttys000", "ttys004" }, found.Ttys.OrderBy(t => t).ToArray());
+            Assert.Equal("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal", found.Owners["ttys000"]);
+            Assert.Equal("/Applications/iTerm.app/Contents/MacOS/iTerm2", found.Owners["ttys004"]);
+            Assert.Equal(new[] { "ttys007", "ttys009" }, found.Skipped.Select(s => s.Tty).OrderBy(t => t).ToArray());
+            Assert.Contains("/Applications/iTerm.app/Contents/MacOS/iTerm2", found.AppBinaries);
+            Assert.Contains("/Applications/Visual Studio Code.app/Contents/MacOS/Electron", found.AppBinaries);
         }
 
         [Fact]
@@ -121,6 +139,17 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         public void Terminal_app_is_recognised_by_its_bundle_path(String owner, Boolean drivable)
         {
             Assert.Equal(drivable, MacPlatformBridge.IsTerminalApp(owner));
+        }
+
+        [Theory]
+        [InlineData("/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal", true)]
+        [InlineData("/Applications/iTerm.app/Contents/MacOS/iTerm2", true)]                       // #128
+        [InlineData("/Applications/Ghostty.app/Contents/MacOS/ghostty", false)]
+        [InlineData("/Applications/cmux.app/Contents/MacOS/cmux", false)]
+        [InlineData(null, false)]
+        public void A_session_is_drivable_when_some_driver_owns_its_terminal(String owner, Boolean drivable)
+        {
+            Assert.Equal(drivable, MacTerminalDriver.IsDrivable(owner));
         }
 
         [Theory]

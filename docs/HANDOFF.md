@@ -237,7 +237,13 @@ the README's Windows notes.
 
 ## Future: other terminals (assessed 2026-08-08)
 
-**iTerm2 is the one worth doing** (next version, not this release): its AppleScript dictionary
+**iTerm2 — shipped 2026-10-14 (#128)**, as the seam described here: `MacTerminalDriver` with
+Terminal.app and iTerm2 drivers inside the Mac bridge, the owner recorded per session so a mixed
+setup routes per press, no-session gestures following the terminal in front or last touched, and
+`tools/make-iterm2-profiles.py` deriving the iTerm2 layouts. The assessment as written on
+2026-08-08 follows.
+
+**iTerm2 is the one worth doing**: its AppleScript dictionary
 addresses sessions by `tty` and types via `write text`, so the exact-targeting guarantee ("a
 keystroke reaches the intended session or nothing") carries over intact. Shape: a terminal seam
 inside the Mac bridge (the same move IPlatformBridge made for the OS — the action layer already

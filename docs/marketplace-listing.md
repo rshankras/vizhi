@@ -123,7 +123,7 @@ The PM offered (2026-09-04) to help with the description wording and asked for a
 - **Don't paste from a terminal window.** Selection picks up invisible indent and trailing spaces that count against the limit — a 491-char draft overflowed the 500-char field that way. Put the text on the clipboard directly (`pbcopy < file`) and ⌘V into the form.
 - **Count characters, not bytes**: `wc -m` with a UTF-8 locale (em-dashes are 1 character but 3 bytes; `wc -c` overcounts). Leave ≥15 characters of headroom in case the form counts newlines differently.
 - **Feature order is the message**: sessions first, voice second — the differentiators no other keypad plugin has (per-session keys, amber/red approval lighting, fully offline voice).
-- Always name the supported terminals (Apple Terminal / Windows Terminal) — "your terminal" wrongly implies iTerm2/Ghostty/Warp work.
+- Always name the supported terminals (Apple Terminal and iTerm2 on macOS / Windows Terminal) — "your terminal" wrongly implies Ghostty/Warp work. iTerm2 since #128; the listing copy above predates it and needs the word added at the next submission.
 - **Check the carried-over teaser and description every time.** The portal pre-fills them from the live listing, and it has come back both stale and cut short (2.3.1).
 - **No inline code in the form.** The preview drops backtick spans entirely, so `` `~/.claude/settings.json` `` rendered as "from .". Use plain text.
 - Homepage and Support URLs have their own form fields, so don't spend description characters on links.

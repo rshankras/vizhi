@@ -2,15 +2,24 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
 
     /// <summary>
-    /// The macOS backend: drives Terminal.app through osascript, discovers sessions with `ps`,
-    /// and keys sessions by TTY (e.g. "ttys003") — the same key the bash statusline/hook scripts
-    /// derive via `ps -o tty`, which is what lets the two sides agree on a filename.
+    /// The macOS backend: drives Terminal.app and iTerm2 through osascript, discovers sessions with
+    /// `ps`, and keys sessions by TTY (e.g. "ttys003") — the same key the bash statusline/hook
+    /// scripts derive via `ps -o tty`, which is what lets the two sides agree on a filename.
     ///
-    /// This is the original 1.x behavior, moved behind IPlatformBridge unchanged. The AppleScript
-    /// here is verbatim: the focus guard, the settling delays, and the key codes are all
-    /// load-bearing and pinned by tests.
+    /// This is the original 1.x behavior, moved behind IPlatformBridge unchanged, with the
+    /// terminal-specific AppleScript moved once more behind <see cref="MacTerminalDriver"/> so a
+    /// second terminal application could be added (#128). The AppleScript is verbatim: the focus
+    /// guard, the settling delays, and the key codes are all load-bearing and pinned by tests.
+    ///
+    /// WHICH DRIVER. Discovery records the application that owns each session, so a press on a
+    /// session key reaches that application and no other — a mixed setup with sessions in both
+    /// terminals routes every press correctly. Gestures that have no session (New Tab, New Claude,
+    /// Go to Project, the window keys) go to the terminal the user is using: the one in front at
+    /// the last probe, or the one the keys last touched, falling back to Terminal.app.
     /// </summary>
     internal sealed class MacPlatformBridge : IPlatformBridge
     {
@@ -44,82 +53,39 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
         }
 
         // ------------------------------------------------------------------------------------------
-        // Guarded keystroke injection — every injection FIRST focuses the tracked Claude tab in
-        // Terminal.app (verified by TTY), then types, all in ONE osascript run so no app switch can
-        // slip in between. If Terminal isn't running or the tracked tab is gone, the script beeps
-        // and types NOTHING — a key press can never land in Slack or a browser. Strict Terminal.app
-        // by design (the profile is Terminal-bound). Ported from Vizhi's focusTerminal.
+        // Terminal drivers (#128)
         // ------------------------------------------------------------------------------------------
-        // argv item 1 = target tty ("/dev/ttysNNN"), or "" to use Terminal's front tab.
-        internal const String FocusGuardScript =
-            "on run argv\n" +
-            "set targetTty to item 1 of argv\n" +
-            "if application \"Terminal\" is not running then\n" +  // never auto-launch Terminal
-            "  beep\n" +
-            "  return \"no-terminal\"\n" +
-            "end if\n" +
-            "tell application \"Terminal\"\n" +
-            "  activate\n" +
-            "  if targetTty is not \"\" then\n" +
-            "    set found to false\n" +
-            "    repeat with terminalWindow in windows\n" +
-            // Not every Terminal window has tabs — a settings/inspector window raises
-            // "Can't get every tab of item N of every window" (-1728), which aborted the whole
-            // script and left the plugin unable to focus OR type. Skip such windows instead.
-            "      try\n" +
-            "        repeat with terminalTab in tabs of terminalWindow\n" +
-            "          if (tty of terminalTab as text) is targetTty then\n" +
-            "            set selected tab of terminalWindow to terminalTab\n" +
-            "            set index of terminalWindow to 1\n" +
-            "            set found to true\n" +
-            "            exit repeat\n" +
-            "          end if\n" +
-            "        end repeat\n" +
-            "      end try\n" +
-            "      if found then exit repeat\n" +
-            "    end repeat\n" +
-            "    if not found then\n" +
-            "      beep\n" +
-            "      return \"tab-missing\"\n" +
-            "    end if\n" +
-            "  end if\n" +
-            "end tell\n" +
-            "delay 0.05\n";  // let activation settle before System Events types
 
-        // Bring Terminal to the front, then send a key chord to it. (Was NavCommand.ActivateThen.)
-        private const String ActivateThen =
-            "tell application \"Terminal\" to activate\n" +
-            "delay 0.05\n" +
-            "tell application \"System Events\" to ";
+        // The driver that reaches each discovered session, by TTY. Rebuilt on every scan; a session
+        // the scan has not seen (or one with no owner, under a test's own filter) is Terminal.app's,
+        // which is exactly the pre-#128 behaviour.
+        private readonly Dictionary<String, MacTerminalDriver> _sessionDrivers = new(StringComparer.Ordinal);
 
-        // Open a new tab, then run the AGENT's cli in it via `do script` (reliable command send —
-        // no per-character keystroke timing). delay lets the new tab become front first. Built
-        // from _cliCommand, never a literal: these two were consts hardcoding "claude" long after
-        // the rest of the bridge had learned the agent's name, so the Codex keypad's New key
-        // opened a claude session — found only when a user read the key label.
-        // The shell command travels as an osascript ARGUMENT (item 1 of argv), not interpolated
-        // into the source: since #113 it may carry a `cd` to a project folder, and folder names
-        // legitimately contain quotes and backslashes — the same discipline LaunchShellCommand uses.
-        private const String NewAgentTabScript =
-            "on run argv\n" +
-            "set shellCommand to item 1 of argv\n" +
-            "tell application \"Terminal\"\n" +
-            "  activate\n" +
-            "  tell application \"System Events\" to key code 17 using command down\n" +
-            "  delay 0.5\n" +
-            "  do script shellCommand in front window\n" +
-            "end tell\n" +
-            "end run";
+        // The drivers whose application is RUNNING, per the last scan. The frontmost probe only asks
+        // these: a script that names an application which is not even installed can raise a
+        // "Where is …?" dialog while compiling, and the probe runs on the poll timer. Terminal.app is
+        // part of every macOS, so it is always asked, guarded by its own "is running".
+        private IReadOnlyList<MacTerminalDriver> _runningDrivers = new[] { MacTerminalDriver.Terminal };
 
-        // New WINDOW running the agent: `do script` with no "in" target opens a fresh window.
-        private const String NewAgentWindowScript =
-            "on run argv\n" +
-            "set shellCommand to item 1 of argv\n" +
-            "tell application \"Terminal\"\n" +
-            "  activate\n" +
-            "  do script shellCommand\n" + // no target → new window
-            "end tell\n" +
-            "end run";
+        // The terminal the user is using, as far as the bridge can tell: set by a frontmost probe
+        // that found one of them in front, and by every press that reached a session. The most
+        // recent signal wins, so pressing an iTerm2 session key moves New Tab there at once rather
+        // than after the next probe.
+        private MacTerminalDriver _currentDriver;
+
+        /// <summary>The driver for gestures that name no session: New Tab, New Claude, Go to Project, windows.</summary>
+        internal MacTerminalDriver PreferredDriver => this._currentDriver ?? MacTerminalDriver.Terminal;
+
+        /// <summary>The driver that reaches <paramref name="sessionKey"/>, or the preferred one for no/unknown session.</summary>
+        internal MacTerminalDriver DriverFor(String sessionKey)
+        {
+            if (!String.IsNullOrEmpty(sessionKey) && this._sessionDrivers.TryGetValue(sessionKey, out var owner))
+            {
+                return owner;
+            }
+
+            return this.PreferredDriver;
+        }
 
         /// <summary>The agent, started in <paramref name="directory"/> when the bridge chose one (#113).</summary>
         private String AgentShellCommand(String directory) =>
@@ -144,8 +110,8 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
         // ------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Which Terminal tabs are running Claude right now. Bounded and killed on hang, exactly like
-        /// the osascript calls — a wedged `ps` must never be able to pile up poll threads.
+        /// Which terminal tabs are running the agent right now. Bounded and killed on hang, exactly
+        /// like the osascript calls — a wedged `ps` must never be able to pile up poll threads.
         /// </summary>
         public HashSet<String> DiscoverSessions()
         {
@@ -182,41 +148,77 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
                 }
             }
 
+            // Which driver reaches each session, and which terminal applications are running at
+            // all (#128). Both come from the listing already in hand — no second scan.
+            this._sessionDrivers.Clear();
+            foreach (var pair in found.Owners)
+            {
+                var driver = MacTerminalDriver.For(pair.Value);
+                if (driver != null)
+                {
+                    this._sessionDrivers[pair.Key] = driver;
+                }
+            }
+
+            var running = new List<MacTerminalDriver>();
+            foreach (var driver in MacTerminalDriver.All)
+            {
+                if (driver == MacTerminalDriver.Terminal || IsRunning(driver, found.AppBinaries))
+                {
+                    running.Add(driver);
+                }
+            }
+            this._runningDrivers = running;
 
             // Say WHY a session is missing from the keys — once per session, not per poll (#27).
-            // Before #29 an iTerm2 or cmux session took a slot, the press pinned a TTY the keys could
-            // not reach, and the log said nothing at all.
+            // Before #29 a cmux session took a slot, the press pinned a TTY the keys could not
+            // reach, and the log said nothing at all.
             foreach (var s in found.Skipped)
             {
                 if (this._reportedUndrivable.Add(s.Tty + "|" + (s.Owner ?? "?")))
                 {
                     PluginLog.Warning(s.Owner == null
                         ? $"MacPlatformBridge: session on {s.Tty} is not shown — no terminal application in its ancestry (tmux, screen or ssh?), so the keys cannot reach it"
-                        : $"MacPlatformBridge: session on {s.Tty} is not shown — it runs in {s.Owner}, which the keys cannot drive (Terminal.app only; #29)");
+                        : $"MacPlatformBridge: session on {s.Tty} is not shown — it runs in {s.Owner}, which the keys cannot drive (Terminal.app and iTerm2 only; #29, #128)");
                 }
             }
 
             return found.Ttys;
         }
 
+        private static Boolean IsRunning(MacTerminalDriver driver, IEnumerable<String> appBinaries)
+        {
+            foreach (var binary in appBinaries)
+            {
+                if (driver.Owns(binary))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Which terminal application's sessions the keys can actually reach (#29). Every action key
-        /// finds the tab by TTY and types through Terminal.app's AppleScript, so today that is exactly
-        /// one application. iTerm2 exposes a `tty` on each session too and is the obvious second
-        /// driver; Ghostty, Warp and editor-integrated terminals expose nothing addressable by TTY,
+        /// finds the tab by TTY and types through that application's AppleScript, so a session takes
+        /// a key only if a <see cref="MacTerminalDriver"/> owns its terminal: Terminal.app and iTerm2
+        /// (#128). Ghostty, Warp and editor-integrated terminals expose nothing addressable by TTY,
         /// so a session in them can only ever be a key that does nothing. Settable so tests can
         /// switch the filter off (null) or supply their own.
         /// </summary>
-        internal Func<String, Boolean> DrivableOwner { get; set; } = IsTerminalApp;
+        internal Func<String, Boolean> DrivableOwner { get; set; } = MacTerminalDriver.IsDrivable;
 
-        internal static Boolean IsTerminalApp(String ownerCommand) =>
-            ownerCommand != null && ownerCommand.Contains("/Terminal.app/Contents/MacOS/Terminal", StringComparison.Ordinal);
+        /// <summary>Terminal.app alone — the pre-#128 filter, kept for the tests that pin it.</summary>
+        internal static Boolean IsTerminalApp(String ownerCommand) => MacTerminalDriver.Terminal.Owns(ownerCommand);
 
         private readonly HashSet<String> _reportedUndrivable = new HashSet<String>(StringComparer.Ordinal);
 
         /// <summary>
-        /// The TTY (e.g. "ttys003") of the frontmost Terminal tab, or null if Terminal isn't the
-        /// frontmost app / isn't running. Matches the key the bash scripts derive from `ps -o tty`.
+        /// The TTY (e.g. "ttys003") of the frontmost terminal tab, or null if no drivable terminal
+        /// is the frontmost app / is running. Matches the key the bash scripts derive from
+        /// `ps -o tty`. As a side effect, remembers WHICH terminal was in front, for the gestures
+        /// that name no session.
         /// </summary>
         public String QueryFrontmostSession()
         {
@@ -225,26 +227,16 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
                 return null;
             }
 
-            // "... is running" avoids auto-LAUNCHING Terminal just to query it.
-            var script =
-                "if application \"Terminal\" is running then\n" +
-                "  tell application \"Terminal\"\n" +
-                "    try\n" +
-                "      if frontmost then return tty of selected tab of front window\n" +
-                "    end try\n" +
-                "  end tell\n" +
-                "end if\n" +
-                "return \"\"";
             // #46: an overrun means the machine is not answering Apple Events, and the next probe
             // would ask the same stalled machine the same question — blocking the non-overlapping
             // poll loop for another full 2000ms to do it. Skip a few opportunities instead. An EMPTY
-            // answer is not a failure and must not back off: it just means Terminal isn't frontmost.
+            // answer is not a failure and must not back off: it just means no terminal is frontmost.
             if (this._frontmostBackoff.ShouldSkip())
             {
                 return null;
             }
 
-            var raw = this.RunOsascriptCapture(new List<String> { "-e", script }, out var timedOut);
+            var raw = this.RunOsascriptCapture(new List<String> { "-e", this.FrontmostProbeScript() }, out var timedOut);
             if (timedOut)
             {
                 this._frontmostBackoff.RecordTimeout();
@@ -252,7 +244,46 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
             }
 
             this._frontmostBackoff.RecordSuccess();
-            return NormalizeTty(raw);
+            return this.ParseFrontmostReply(raw);
+        }
+
+        /// <summary>One script, one osascript run: each RUNNING driver's query in turn, then "".</summary>
+        internal String FrontmostProbeScript()
+        {
+            var script = new StringBuilder();
+            foreach (var driver in this._runningDrivers)
+            {
+                script.Append(driver.FrontmostQuery);
+            }
+
+            script.Append("return \"\"");
+            return script.ToString();
+        }
+
+        // "Terminal|/dev/ttys003" → "ttys003", remembering Terminal.app as the current terminal.
+        // A bare "/dev/ttys003" (no application named) is still a tty, so a stubbed probe that
+        // answers the old way keeps working.
+        private String ParseFrontmostReply(String raw)
+        {
+            if (String.IsNullOrWhiteSpace(raw))
+            {
+                return null;
+            }
+
+            var reply = raw.Trim();
+            var bar = reply.IndexOf('|');
+            if (bar >= 0)
+            {
+                var driver = MacTerminalDriver.Named(reply.Substring(0, bar));
+                if (driver != null)
+                {
+                    this._currentDriver = driver;
+                }
+
+                reply = reply.Substring(bar + 1);
+            }
+
+            return NormalizeTty(reply);
         }
 
         /// <summary>"/dev/ttys003" (osascript) -> "ttys003"; "ttys003" (ps) stays "ttys003".</summary>
@@ -296,15 +327,16 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
         /// A clipboard paste carries the characters themselves, so it is layout-independent and
         /// Unicode-safe — the same path a human uses. The text still travels as an osascript
         /// ARGUMENT, never interpolated into the script source, so quotes and backslashes in a
-        /// transcript still cannot break out.
+        /// transcript still cannot break out. The same body serves every driver: once the guard
+        /// has the right tab in front, a paste lands in it whichever terminal it is.
         ///
         /// The clipboard is saved and restored as a RECORD, which preserves every flavour the user
         /// had (an image, styled text) rather than flattening it to a string. Both halves are
         /// wrapped in try blocks: failing to save must not stop the injection, and failing to
         /// restore must not fail an injection that has already landed.
         ///
-        /// The delay before restoring is not optional — Terminal reads the pasteboard when Cmd+V is
-        /// handled, so restoring too early pastes the OLD clipboard.
+        /// The delay before restoring is not optional — the terminal reads the pasteboard when
+        /// Cmd+V is handled, so restoring too early pastes the OLD clipboard.
         /// </summary>
         private const String PasteTextBody =
             "set savedClipboard to missing value\n" +
@@ -415,11 +447,13 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
             return "{" + String.Join(", ", parts) + "}";
         }
 
-        // Compose focus guard + injection body into one script and run it. textArg (when non-null)
-        // becomes argv item 2 — passing text as an argument sidesteps AppleScript escaping entirely.
+        // Compose the session's driver's focus guard + injection body into one script and run it.
+        // textArg (when non-null) becomes argv item 2 — passing text as an argument sidesteps
+        // AppleScript escaping entirely.
         private InjectionOutcome RunGuardedInjection(String sessionKey, String injectionBody, String textArg = null)
         {
-            var script = FocusGuardScript + injectionBody + "return \"ok\"\n" + "end run";
+            var driver = this.DriverFor(sessionKey);
+            var script = driver.FocusGuardScript + injectionBody + "return \"ok\"\n" + "end run";
             var args = new List<String>
             {
                 "-e", script,
@@ -441,7 +475,11 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
 
             if (outcome != InjectionOutcome.Ok)
             {
-                PluginLog.Warning($"MacPlatformBridge: injection skipped ({result ?? "osascript failed"}) — Claude's Terminal tab is unavailable");
+                PluginLog.Warning($"MacPlatformBridge: injection skipped ({result ?? "osascript failed"}) — the session's {driver.Name} tab is unavailable");
+            }
+            else
+            {
+                this._currentDriver = driver;
             }
             return outcome;
         }
@@ -451,7 +489,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
         // ------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Bring a specific Terminal tab to the front. Same tab-by-TTY script the injection guard
+        /// Bring a specific session's tab to the front. Same tab-by-TTY script the injection guard
         /// uses, minus the typing.
         /// </summary>
         public void FocusSession(String sessionKey)
@@ -461,16 +499,21 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
                 return;
             }
 
-            this.RunOsascriptCore(
-                new List<String> { "-e", FocusGuardScript + "return \"ok\"\n" + "end run", "/dev/" + sessionKey },
+            var driver = this.DriverFor(sessionKey);
+            var result = this.RunOsascriptCore(
+                new List<String> { "-e", driver.FocusGuardScript + "return \"ok\"\n" + "end run", "/dev/" + sessionKey },
                 15000,
                 wantOutput: true);
+            if (result == "ok")
+            {
+                this._currentDriver = driver;
+            }
         }
 
         public void Navigate(TerminalAction action, String directory = null)
         {
             // The two gestures that START the agent carry the shell command as an argument. A
-            // plain New Tab stays Cmd+T: Terminal's own "new tabs open in" preference applies,
+            // plain New Tab stays Cmd+T: the terminal's own "new tabs open in" preference applies,
             // and typing a `cd` into a tab the user asked to be empty would be noise.
             if (action is TerminalAction.NewClaudeTab or TerminalAction.NewClaudeWindow)
             {
@@ -479,35 +522,32 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
                     return;
                 }
 
-                var launch = action == TerminalAction.NewClaudeTab ? NewAgentTabScript : NewAgentWindowScript;
+                var launcher = this.PreferredDriver;
+                var launch = action == TerminalAction.NewClaudeTab ? launcher.NewAgentTabScript : launcher.NewAgentWindowScript;
                 this.RunOsascriptCore(new List<String> { "-e", launch, this.AgentShellCommand(directory) }, 15000, wantOutput: false);
+                this._currentDriver = launcher;
                 return;
             }
 
-            var script = action switch
-            {
-                TerminalAction.Activate => "tell application \"Terminal\" to activate",
-                TerminalAction.NewTab => ActivateThen + "key code 17 using {command down}",                // Cmd+T (key code, not "t" — see KeyCodeT)
-                TerminalAction.NextTab => ActivateThen + "key code 48 using {control down}",              // Ctrl+Tab
-                TerminalAction.PreviousTab => ActivateThen + "key code 48 using {control down, shift down}",
-                TerminalAction.NextWindow => ActivateThen + "key code 50 using {command down}",           // Cmd+`
-                TerminalAction.PreviousWindow => ActivateThen + "key code 50 using {command down, shift down}",
-                _ => null,
-            };
-
+            var driver = this.PreferredDriver;
+            var script = driver.NavigationScript(action);
             if (script != null)
             {
                 this.RunAppleScript(script);
+                this._currentDriver = driver;
             }
         }
 
         /// <summary>
-        /// cd into the project and run the configured agent. Smart about where:
-        ///   • no Terminal window open      → open one and run there
-        ///   • front tab is an IDLE shell   → reuse it (this is the "empty terminal" case)
-        ///   • front tab is BUSY (claude/cmd running) → open a NEW tab, so we never type into a
+        /// cd into the project and run the configured agent, in the terminal the user is using.
+        /// Smart about where:
+        ///   • no window open               → open one and run there
+        ///   • current tab is an IDLE shell → reuse it (this is the "empty terminal" case)
+        ///   • current tab is BUSY (claude/cmd running) → open a NEW tab, so we never type into a
         ///     live session
-        /// Terminal's `busy` is false only at an idle shell prompt, which is exactly the signal we want.
+        /// Terminal.app's `busy` is false only at an idle shell prompt; iTerm2's `is at shell prompt`
+        /// is true only with its shell integration installed, so without it the launch always opens
+        /// a new tab — the safe direction.
         /// </summary>
         public void LaunchClaudeInProject(String projectDir)
         {
@@ -520,7 +560,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
         }
 
         // The busy-aware launch shared by LaunchClaudeInProject and LaunchAgentSession: reuse an
-        // idle front tab, open a new one when it is busy, never type into a live session.
+        // idle tab, open a new one when it is busy, never type into a live session.
         private void LaunchShellCommand(String cmd)
         {
             if (!this.CanRun())
@@ -530,29 +570,9 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
 
             // Pass the command as an osascript argument instead of interpolating it into the
             // AppleScript source. Project names may legitimately contain quotes or backslashes.
-            var script =
-                "on run argv\n" +
-                "set shellCommand to item 1 of argv\n" +
-                "tell application \"Terminal\"\n" +
-                "  activate\n" +
-                "  if (count of windows) is 0 then\n" +
-                "    do script shellCommand\n" +
-                "  else\n" +
-                "    set isIdle to false\n" +
-                "    try\n" +
-                "      set isIdle to (busy of selected tab of front window is false)\n" +
-                "    end try\n" +
-                "    if isIdle then\n" +
-                "      do script shellCommand in front window\n" +   // reuses the idle tab (NOT 'selected tab of' — that form no-ops)
-                "    else\n" +
-                "      tell application \"System Events\" to key code 17 using command down\n" +
-                "      delay 0.5\n" +
-                "      do script shellCommand in front window\n" +
-                "    end if\n" +
-                "  end if\n" +
-                "end tell\n" +
-                "end run";
-            this.RunOsascriptCore(new List<String> { "-e", script, cmd }, 15000, wantOutput: false);
+            var driver = this.PreferredDriver;
+            this.RunOsascriptCore(new List<String> { "-e", driver.LaunchShellCommandScript, cmd }, 15000, wantOutput: false);
+            this._currentDriver = driver;
         }
 
         private static String ShellQuote(String value) =>
@@ -637,7 +657,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
         }
 
         // Like a fire-and-forget osascript but returns stdout (trimmed) — for querying state (e.g.
-        // the frontmost Terminal tab's TTY) on the poll timer, so it uses a short, snappy timeout.
+        // the frontmost terminal tab's TTY) on the poll timer, so it uses a short, snappy timeout.
         private String RunOsascriptCapture(List<String> args, out Boolean timedOut) =>
             this.RunOsascriptCore(args, 2000, wantOutput: true, out timedOut);
 

@@ -7,17 +7,18 @@ namespace Loupedeck.ClaudeConsolePlugin.Actions
     /// <summary>
     /// App / session navigation keys (group "Terminal"). The gestures are named here; how each
     /// one is performed is the platform backend's business (see IPlatformBridge.Navigate):
-    ///   Terminal   → bring Terminal to the front (replaces Cmd+Tab → Terminal)
-    ///   New Tab    → open a new Terminal tab — a fresh shell (Cmd+T)
-    ///   New <Agent> → open a new Terminal tab AND run the agent in it (one press = new session)
-    ///   Next Tab   → switch to the next Terminal tab / session (Ctrl+Tab)
-    ///   Prev Tab   → switch to the previous Terminal tab / session (Ctrl+Shift+Tab)
-    ///   New <Agent> (Window) → open a new Terminal WINDOW running the agent (do script, no target)
-    ///   Next Window → cycle to the next Terminal window (Cmd+`)
-    ///   Prev Window → cycle to the previous Terminal window (Cmd+Shift+`)
+    ///   Terminal   → bring the terminal to the front (replaces Cmd+Tab → Terminal)
+    ///   New Tab    → open a new terminal tab — a fresh shell (Cmd+T)
+    ///   New <Agent> → open a new terminal tab AND run the agent in it (one press = new session)
+    ///   Next Tab   → switch to the next terminal tab / session
+    ///   Prev Tab   → switch to the previous terminal tab / session
+    ///   New <Agent> (Window) → open a new terminal WINDOW running the agent
+    ///   Next Window → cycle to the next terminal window (Cmd+`)
+    ///   Prev Window → cycle to the previous terminal window (Cmd+Shift+`)
     ///
     /// Tab/window keys activate the terminal first (so they work from any app) then send its own
-    /// shortcut. Windows are for people who prefer separate windows over tabs.
+    /// shortcut — on macOS whichever of Terminal.app and iTerm2 the user is in (#128). Windows are
+    /// for people who prefer separate windows over tabs.
     /// </summary>
     public class NavCommand : PluginDynamicCommand
     {
@@ -45,21 +46,21 @@ namespace Loupedeck.ClaudeConsolePlugin.Actions
             var agentName = this._agentName;
 
             this.AddParameter(Terminal, "Terminal", "Terminal")
-                .SetDescription("Bring Terminal.app to the front");
+                .SetDescription("Bring the terminal to the front (Terminal.app or iTerm2)");
             this.AddParameter(NewTab, "New Tab", "Terminal")
-                .SetDescription("Open a new Terminal tab (a fresh shell)");
+                .SetDescription("Open a new terminal tab (a fresh shell)");
             this.AddParameter(NewClaude, $"New {agentName}", "Terminal")
-                .SetDescription($"Open a new Terminal tab and start a {agentName} session");
+                .SetDescription($"Open a new terminal tab and start a {agentName} session");
             this.AddParameter(NextTab, "Next Tab", "Terminal")
-                .SetDescription("Switch to the next Terminal tab");
+                .SetDescription("Switch to the next terminal tab");
             this.AddParameter(PrevTab, "Prev Tab", "Terminal")
-                .SetDescription("Switch to the previous Terminal tab");
+                .SetDescription("Switch to the previous terminal tab");
             this.AddParameter(NewClaudeWindow, $"New {agentName} (Window)", "Terminal")
-                .SetDescription($"Open a new Terminal window and start a {agentName} session");
+                .SetDescription($"Open a new terminal window and start a {agentName} session");
             this.AddParameter(NextWindow, "Next Window", "Terminal")
-                .SetDescription("Switch to the next Terminal window (Cmd+`)");
+                .SetDescription("Switch to the next terminal window (Cmd+`)");
             this.AddParameter(PrevWindow, "Prev Window", "Terminal")
-                .SetDescription("Switch to the previous Terminal window (Cmd+Shift+`)");
+                .SetDescription("Switch to the previous terminal window (Cmd+Shift+`)");
         }
 
         protected override void RunCommand(String actionParameter)

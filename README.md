@@ -18,9 +18,9 @@ Claude Console turns the MX Creative Keypad's nine LCD keys into a control surfa
 - **Git, through Claude** — Commit, Diff, Push, Create PR, Status, Log.
 - **Screenshot into the conversation** — press, drag a region, and the image is handed to the *current* session with the cursor waiting for your question. [Details](#screenshot).
 - **Offline voice** — **Dictate** sends what you said straight away; **Voice Draft** leaves it in the input box so you can fix mis‑hearings first; **Go to Project** opens a project by its spoken name. [whisper.cpp](https://github.com/ggerganov/whisper.cpp) transcribes on your machine.
-- **Terminal & session nav** — activate Terminal, new tab, new Claude session, next/prev tab, plus **New Claude (Window)** and **Next/Prev Window** if you prefer windows.
+- **Terminal & session nav** — activate the terminal, new tab, new Claude session, next/prev tab, plus **New Claude (Window)** and **Next/Prev Window** if you prefer windows. Terminal.app and iTerm2.
 - **Model & modes** — **Model** opens the `/model` picker and keeps a consistent brain icon; **Mode** cycles normal → auto‑accept edits → plan; plus Compact, Context, Clear, Exit, **Tab** (accept an autocomplete and run it).
-- **Types where it should** — every key finds Claude's own Terminal tab and types there, so a press can't land in Slack or a browser because you glanced away. Can't find it? It beeps and types nothing.
+- **Types where it should** — every key finds Claude's own tab (Terminal.app or iTerm2) and types there, so a press can't land in Slack or a browser because you glanced away. Can't find it? It beeps and types nothing.
 
 See [PRIVACY.md](PRIVACY.md) — everything runs on your own machine.
 
@@ -34,7 +34,7 @@ See [PRIVACY.md](PRIVACY.md) — everything runs on your own machine.
 **macOS**
 
 - **Apple Silicon** (whisper.cpp uses Metal).
-- Terminal.app. Every typing key targets Claude's own Terminal tab.
+- Terminal.app or iTerm2. Every typing key targets Claude's own tab in whichever of the two it runs in; sessions in other terminals are not shown.
 
 **Windows**
 
@@ -69,7 +69,7 @@ The Windows build reaches Claude a different way than macOS does, and a few diff
 Install from the **Logi Marketplace** inside Options+, or download the latest `ClaudeConsole_<ver>.lplug4` from [vizhi.dev](https://vizhi.dev/claude-console/#install), then:
 
 1. **Double-click it** — Logi Options+ registers the plugin. (Or, with the Logi Plugin Tool: `logiplugintool install ./ClaudeConsole_<ver>.lplug4`.) If macOS blocks it, right-click → **Open**, or run `xattr -dr com.apple.quarantine ClaudeConsole_<ver>.lplug4`.
-2. **Put the keys on Terminal.** The plugin is *universal*: it binds to no application and ships no layout of its own, so nothing appears on the keypad until you give it keys. The quickest way is the ready-made layout — see [Import the ready-made layout](#import-the-ready-made-layout) just below (two clicks). Or build your own: in Options+ add **Terminal** as an application, then drag any **Claude Console** actions onto its profile.
+2. **Put the keys on your terminal.** The plugin is *universal*: it binds to no application and ships no layout of its own, so nothing appears on the keypad until you give it keys. The quickest way is the ready-made layout — see [Import the ready-made layout](#import-the-ready-made-layout) just below (two clicks). Or build your own: in Options+ add **Terminal** (or **iTerm2**) as an application, then drag any **Claude Console** actions onto its profile.
 3. On first use, grant **Accessibility** to the Logi Plugin Service (so it can type into your terminal). For **voice**, press the Dictate key and grant **Microphone** when prompted — the helper and speech model install themselves on first use. The **Screenshot** key asks for **Screen Recording** the first time.
 
 > The live **Cost / Context / Activity** keys are **opt-in**: the plugin never edits your Claude Code settings on its own — they read **Set up** until you press one of them, and the press itself is the prompt. See [The live status bridge](#the-live-status-bridge).
@@ -78,9 +78,9 @@ Install from the **Logi Marketplace** inside Options+, or download the latest `C
 
 Rather than mapping nine keys by hand, import the ready-made profile to get the full layout instantly. **This is the normal setup, not a fallback** — since 2.2.0 the plugin is universal (no application binding, no packaged profile), so the layout is something you import, exactly once.
 
-1. Download **`ClaudeConsole-Keypad.lp5`** from the [keypad layouts page](https://www.rshankar.com/keypad-profiles/), or take it from [`profiles/`](profiles/) in this repo. On Windows use **`ClaudeConsole-Windows.lp5`**.
+1. Download **`ClaudeConsole-Keypad.lp5`** from the [keypad layouts page](https://www.rshankar.com/keypad-profiles/), or take it from [`profiles/`](profiles/) in this repo. For iTerm2 use **`ClaudeConsole-iTerm2.lp5`**; on Windows use **`ClaudeConsole-Windows.lp5`**.
 2. In **Logi Options+** → your **MX Creative Keypad**, open the profile menu (the `⋯` / profile dropdown) → **Import Profile** → pick the `.lp5`.
-3. It imports as a **Terminal** profile, five pages deep, so it activates whenever Terminal.app is frontmost. Rearrange or rebind any key afterward.
+3. It imports as a profile for that terminal's own entry in Options+ (**Terminal** or **iTerm2**), five pages deep, so it activates whenever that app is frontmost. Rearrange or rebind any key afterward. Use both terminals? Import both files.
 
 | Page | Keys (top row → bottom row) |
 |------|------------------------------|
@@ -92,10 +92,10 @@ Rather than mapping nine keys by hand, import the ready-made profile to get the 
 
 Notes:
 - Install the plugin first (step 1 above) so the imported keys resolve to real actions.
-- Import once. Reinstalling or updating the plugin never touches your profile — it belongs to Terminal's entry in Options+, not to the plugin — so the keys simply light up again after an update.
-- The profile is bound to Apple's **Terminal.app**, and so are the keys themselves: every typing key focuses Claude's Terminal.app tab before it types — it will not type into iTerm2/Ghostty/Warp or any other app. Sessions running in another terminal are **not shown on the Session keys** at all (the plugin log names each one it skipped). iTerm2 support is on the roadmap.
+- Import once. Reinstalling or updating the plugin never touches your profile — it belongs to the terminal's entry in Options+, not to the plugin — so the keys simply light up again after an update.
+- The keys type only into **Terminal.app** and **iTerm2**: every typing key focuses Claude's own tab in the app that owns it before it types — it will not type into Ghostty, Warp, an editor's terminal or any other app. Sessions running in another terminal are **not shown on the Session keys** at all (the plugin log names each one it skipped). With sessions in both apps, each key goes to the right one; New Tab, New Claude and Go to Project open in the terminal you are using. In iTerm2, Go to Project reuses an idle tab only with [shell integration](https://iterm2.com/documentation-shell-integration.html) installed; otherwise it always opens a new tab.
 - Session 4–6, Screenshot, Voice Draft, Context, Activity, Mode, Terminal and the window keys exist as actions but aren't on the shipped pages — drag them on wherever you like.
-- Already have a Terminal profile you like? Skip the import and drag the **Claude Console** actions onto it instead.
+- Already have a Terminal or iTerm2 profile you like? Skip the import and drag the **Claude Console** actions onto it instead.
 - **Don't open the live keys in the Options+ icon editor** (sessions, Yes/No, Cost/Context/Activity): it freezes them into a snapshot. [Why, and the fix](docs/troubleshooting.md#the-session-keys-are-stuck).
 
 ## The live status bridge
@@ -118,7 +118,7 @@ Notes:
 - **A pin aims the keys; it doesn't freeze the readouts.** Cost and Context show the session in the tab you're looking at, while Yes/No, Tab and the typing keys act on the pinned one — so you can watch one session while answering another. The amber badge on Yes always describes the session the answer keys will actually answer. (On Windows there's no way to detect the frontmost tab, so both follow the pin.)
 - **Slots are stable.** A session keeps its key for as long as it lives — close one and the others stay put, so you don't approve the wrong session out of muscle memory. The freed key is reused by the next session you start. Six sessions get keys; the shipped layout shows three — drag **Session 4–6** onto a page if you run more.
 - A new session takes a key **immediately** (labelled "Claude Code" until it reports its project), and a closed tab clears within about two seconds. **Go to Project** releases the pin, since it starts a session somewhere new.
-- On macOS, Terminal.app only, like the rest of the plugin; on Windows, Windows Terminal — see [Windows notes](#windows-notes).
+- On macOS, Terminal.app or iTerm2, like the rest of the plugin; on Windows, Windows Terminal — see [Windows notes](#windows-notes).
 
 ## Using voice
 

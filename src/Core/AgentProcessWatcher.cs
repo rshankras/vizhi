@@ -110,6 +110,20 @@ namespace Loupedeck.ClaudeConsolePlugin
         {
             public HashSet<String> Ttys = new HashSet<String>(StringComparer.Ordinal);
             public List<SkippedSession> Skipped = new List<SkippedSession>();
+
+            /// <summary>
+            /// The owning application's command line for each session in <see cref="Ttys"/>, so a
+            /// bridge with more than one terminal driver knows which one reaches each tab (#128).
+            /// Empty when no filter was given: nothing then needs an owner.
+            /// </summary>
+            public Dictionary<String, String> Owners = new Dictionary<String, String>(StringComparer.Ordinal);
+
+            /// <summary>
+            /// Every application binary in the listing (`….app/Contents/MacOS/…`), whether or not it
+            /// owns a session — so a bridge can tell which terminal applications are RUNNING from
+            /// the scan it already has, without a second one.
+            /// </summary>
+            public HashSet<String> AppBinaries = new HashSet<String>(StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -135,6 +149,10 @@ namespace Loupedeck.ClaudeConsolePlugin
                 if (m.Success)
                 {
                     table[m.Groups[1].Value] = (m.Groups[2].Value, m.Groups[4].Value);
+                    if (IsAppBinary(m.Groups[4].Value))
+                    {
+                        result.AppBinaries.Add(m.Groups[4].Value);
+                    }
                 }
             }
 
@@ -144,6 +162,7 @@ namespace Loupedeck.ClaudeConsolePlugin
                 if (owner != null && drivableOwner(owner))
                 {
                     result.Ttys.Add(candidate.Tty);
+                    result.Owners[candidate.Tty] = owner;
                 }
                 else
                 {
