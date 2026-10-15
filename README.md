@@ -78,7 +78,7 @@ Install from the **Logi Marketplace** inside Options+, or download the latest `C
 
 Rather than mapping nine keys by hand, import the ready-made profile to get the full layout instantly. **This is the normal setup, not a fallback** — since 2.2.0 the plugin is universal (no application binding, no packaged profile), so the layout is something you import, exactly once.
 
-1. Download **`VizhiClaudeCode-Terminal.lp5`** from the [keypad layouts page](https://www.rshankar.com/keypad-profiles/), or take it from [`profiles/`](profiles/) in this repo. For iTerm2 use **`VizhiClaudeCode-iTerm2.lp5`**; on Windows use **`VizhiClaudeCode-WindowsTerminal.lp5`**.
+1. Download **`VizhiClaudeCode-Terminal.lp5`** from the [layouts page on vizhi.dev](https://vizhi.dev/layouts/), or take it from [`profiles/`](profiles/) in this repo. For iTerm2 use **`VizhiClaudeCode-iTerm2.lp5`**; on Windows use **`VizhiClaudeCode-WindowsTerminal.lp5`**.
 2. In **Logi Options+** → your **MX Creative Keypad**, open the profile menu (the `⋯` / profile dropdown) → **Import Profile** → pick the `.lp5`.
 3. It imports as a profile for that terminal's own entry in Options+ (**Terminal** or **iTerm2**), five pages deep, so it activates whenever that app is frontmost. Rearrange or rebind any key afterward. Use both terminals? Import both files.
 
