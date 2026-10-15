@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 PRODUCTS = {
-    "ClaudeConsole": ("Claude Console", "com.rshankar.claudeconsole.voicehelper"),
+    "ClaudeConsole": ("Vizhi for Claude Code", "com.rshankar.claudeconsole.voicehelper"),   # renamed in 2.4.0; the bundle id holds the mic grant
     "VizhiCodex": ("Vizhi for Codex", "com.rshankar.vizhicodex.voicehelper"),
     "VizhiDesktop": ("Vizhi for ChatGPT", "com.rshankar.vizhidesktop.voicehelper"),
 }

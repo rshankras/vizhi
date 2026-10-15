@@ -35,9 +35,9 @@ Codex ships the iTerm2 driver in the same cycle as 1.7.0.
 4. Pack per SUBMISSION.md: Certum session for the Windows helpers (expires in 1–2 h, log in right
    before), sign + notarize the voice helper, `DOTNET_ROLL_FORWARD=LatestMajor` for
    `logiplugintool`. Both products.
-5. **Voice helper (#140, open P1):** the packed helper comes from the packer's runtime home and its
-   microphone prompt still says "Claude Console". The rename does not fix that; #140 does. Say so
-   in the release notes if #140 is not in this cut.
+5. **Voice helper:** the pack builds, signs and notarizes it from source per product (#140's fix is
+   on main), so the microphone prompt reads "Vizhi for Claude Code transcribes your speech…". Check
+   it on the clean-machine install, then close #140 with the release.
 6. Clean-machine install of each package (Options+ click), then step 5 of the release flow.
 7. Tag `v2.4.0` and `vizhi-codex/v1.7.0`, publish the GitHub releases, attach the six layouts.
 

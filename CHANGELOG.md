@@ -611,8 +611,8 @@ All notable changes to Claude Console are documented here. Format based on
   Windows file descriptions use the new name. Nothing else changes: the internal name stays
   `ClaudeConsole`, so an update keeps your layouts, key bindings, live-status wiring, microphone
   permission and settings. A layout imported earlier keeps its old name until you import the new
-  file, which replaces it rather than duplicating it (same GUID). The microphone prompt still
-  reads "Claude Console" until the voice helper is rebuilt (#140). The runtime folder is still
+  file, which replaces it rather than duplicating it (same GUID). The voice helper and its
+  microphone prompt carry the new name too (built per product at pack time, #140). The runtime folder is still
   `~/.claude/claude-console/`, and the repository is now `rshankras/vizhi`.
 - **The layout downloads are named after the product and the terminal they bind to.**
   `ClaudeConsole-Keypad.lp5` → `VizhiClaudeCode-Terminal.lp5`, `ClaudeConsole-iTerm2.lp5` →
