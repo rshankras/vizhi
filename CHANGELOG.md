@@ -32,6 +32,13 @@ All notable changes to Claude Console are documented here. Format based on
   file, which replaces it rather than duplicating it (same GUID). The microphone prompt still
   reads "Claude Console" until the voice helper is rebuilt (#140). The runtime folder is still
   `~/.claude/claude-console/`, and the repository is now `rshankras/vizhi`.
+- **The layout downloads are named after the product and the terminal they bind to.**
+  `ClaudeConsole-Keypad.lp5` → `VizhiClaudeCode-Terminal.lp5`, `ClaudeConsole-iTerm2.lp5` →
+  `VizhiClaudeCode-iTerm2.lp5`, `ClaudeConsole-Windows.lp5` → `VizhiClaudeCode-WindowsTerminal.lp5`,
+  and `VizhiCodex-Keypad` / `-Windows` → `VizhiCodex-Terminal` / `-WindowsTerminal`. In Options+
+  the profiles read "Vizhi for Claude Code — Terminal", "— iTerm2", "— Windows Terminal" (and
+  the same for Vizhi for Codex) instead of "— Keypad". Same GUIDs, so importing a new file
+  replaces the profile you had.
 
 ### Fixed
 - **Windows: a helper dated in the future no longer withholds Yes/No and live values after

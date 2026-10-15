@@ -80,10 +80,10 @@ VIZHI_FIRST_PAGE = [
 ]
 
 PROFILE_PAGES = [
-    (os.path.join(ROOT, "profiles", "ClaudeConsole-Keypad.lp5"), CLAUDE_FIRST_PAGE),
-    (os.path.join(ROOT, "profiles", "ClaudeConsole-Windows.lp5"), CLAUDE_FIRST_PAGE),
-    (os.path.join(ROOT, "profiles", "VizhiCodex-Keypad.lp5"), VIZHI_FIRST_PAGE),
-    (os.path.join(ROOT, "profiles", "VizhiCodex-Windows.lp5"), VIZHI_FIRST_PAGE),
+    (os.path.join(ROOT, "profiles", "VizhiClaudeCode-Terminal.lp5"), CLAUDE_FIRST_PAGE),
+    (os.path.join(ROOT, "profiles", "VizhiClaudeCode-WindowsTerminal.lp5"), CLAUDE_FIRST_PAGE),
+    (os.path.join(ROOT, "profiles", "VizhiCodex-Terminal.lp5"), VIZHI_FIRST_PAGE),
+    (os.path.join(ROOT, "profiles", "VizhiCodex-WindowsTerminal.lp5"), VIZHI_FIRST_PAGE),
 ]
 
 

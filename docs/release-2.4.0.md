@@ -7,7 +7,7 @@ Codex ships the iTerm2 driver in the same cycle as 1.7.0.
 ## What changed for users
 
 - Sessions in **iTerm2** take Session keys and every key reaches them (#128). Ready-made iTerm2
-  layouts: `ClaudeConsole-iTerm2.lp5`, `VizhiCodex-iTerm2.lp5`.
+  layouts: `VizhiClaudeCode-iTerm2.lp5`, `VizhiCodex-iTerm2.lp5`.
 - **Claude Console is now Vizhi for Claude Code.** Display name only: the internal name
   `ClaudeConsole`, the namespace, the runtime home `~/.claude/claude-console/`, the hook and helper
   names, the backup suffix, the voice helper bundle id and every layout GUID are unchanged, and
@@ -20,7 +20,7 @@ Codex ships the iTerm2 driver in the same cycle as 1.7.0.
 - [x] iTerm2 device pass on the owner's Mac for both products (PR #162 lists the items). Skipped
       by choice: quit-and-restore, press-while-quit, the window keys (not on any shipped layout).
 - [ ] Rename seen live: dev build loaded, log tag reads `[Vizhi for Claude Code]`, Options+ shows
-      the new plugin name and the re-imported layout reads "Vizhi for Claude Code — Keypad".
+      the new plugin name and the re-imported layout reads "Vizhi for Claude Code — Terminal".
 
 ## Cut
 
@@ -50,7 +50,7 @@ Codex ships the iTerm2 driver in the same cycle as 1.7.0.
   the DLL links to them), the two iTerm2 layouts on the layouts page, FAQ line for "deleting a
   terminal's last profile drops the keypad to the system profile".
 - Close #128 with the release link.
-- Re-import `VizhiCodex-Keypad.lp5` on the owner's Mac (its Terminal profile was deleted during
+- Re-import `VizhiCodex-Terminal.lp5` on the owner's Mac (its Terminal profile was deleted during
   the pass).
 
 ## Known noise, not blocking (file as issues)

@@ -22,8 +22,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-SRC="$ROOT/profiles/ClaudeConsole-Keypad.lp5"
-OUT="$ROOT/profiles/ClaudeConsole-Windows.lp5"
+SRC="$ROOT/profiles/VizhiClaudeCode-Terminal.lp5"
+OUT="$ROOT/profiles/VizhiClaudeCode-WindowsTerminal.lp5"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 

@@ -16,22 +16,22 @@ from __future__ import annotations
 import copy
 import json
 import os
+import sys
 import tempfile
 import zipfile
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import profile_names as names  # noqa: E402
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROFILES = [
-    os.path.join(ROOT, "profiles", "ClaudeConsole-Keypad.lp5"),    # macOS, Terminal entry
-    os.path.join(ROOT, "profiles", "ClaudeConsole-Windows.lp5"),   # Windows Terminal entry
+    names.path("VizhiClaudeCode-Terminal.lp5"),          # macOS, Terminal entry
+    names.path("VizhiClaudeCode-WindowsTerminal.lp5"),   # Windows Terminal entry
 ]
 
 PREFIX = "$ClaudeConsole___Loupedeck.ClaudeConsolePlugin.Actions."
 
-# What Options+ lists the imported profile as. The product was renamed in 2.4.0; the GUID (the
-# profile's identity, `name` / `packageName`) is deliberately NOT touched here, so a re-import
-# replaces the earlier profile rather than adding a second one.
-DISPLAY_NAME = "Vizhi for Claude Code — Keypad"
 FIRST_PAGE = [
     "SessionSlotCommand___1",
     "SessionSlotCommand___2",
@@ -57,9 +57,8 @@ def write_documents(path: str, profile: dict, preview: dict) -> None:
     replacements = {
         "ProfileInfo.json": json.dumps(profile, indent=2).encode("utf-8"),
         "metadata/ProfilePreview.json": json.dumps(preview, indent=2).encode("utf-8"),
-        "metadata/LoupedeckPackage.yaml": (
-            f"type: Profile5\nname: {profile['name']}\ndisplayName: {DISPLAY_NAME}\nversion: 2.0.0.0\n"
-        ).encode("utf-8"),
+        # Identity and display name from the table; the GUID is deliberately never minted here.
+        "metadata/LoupedeckPackage.yaml": names.package_yaml(os.path.basename(path)),
     }
     directory = os.path.dirname(path)
     with tempfile.NamedTemporaryFile(dir=directory, suffix=".lp5", delete=False) as temporary:
@@ -113,7 +112,7 @@ def main() -> None:
     for path in PROFILES:
         profile, preview = read_documents(path)
         apply_first_page(profile)
-        profile["displayName"] = DISPLAY_NAME
+        profile["displayName"] = names.display_name(os.path.basename(path))
         write_documents(path, profile, design_preview(preview))
         print(f"updated {os.path.relpath(path, ROOT)}")
 

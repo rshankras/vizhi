@@ -4,7 +4,7 @@
 #
 # To uninstall the PLUGIN, do it in Logi Options+: right-click the Vizhi for Claude Code
 # plugin -> Uninstall (or run: logiplugintool uninstall ClaudeConsole), and delete the
-# imported "Vizhi for Claude Code — Keypad" profile there too. That is the actual uninstall.
+# imported "Vizhi for Claude Code — Terminal" (or — iTerm2 / — Windows Terminal) profile there too. That is the actual uninstall.
 #
 # This script clears the app-level leftovers that Logi Options+ can't see and never removes:
 #   • our statusLine + hooks in ~/.claude/settings.json (present only if you pressed Enable Live
@@ -317,7 +317,7 @@ echo "  • Microphone permission   tccutil reset Microphone $HELPER_ID"
 [ -f "$LINK" ]   && echo "  • dev plugin link         $LINK  (+ restart LogiPluginService)"
 echo
 echo "To remove the plugin itself: Logi Options+ → right-click Vizhi for Claude Code → Uninstall"
-echo "(and delete the 'Vizhi for Claude Code — Keypad' profile there). NOT touched by this script:"
+echo "(and delete the 'Vizhi for Claude Code — Terminal' (or iTerm2 / Windows Terminal) profile there). NOT touched by this script:"
 echo "  • the plugin + profile in Logi Options+  (or: logiplugintool uninstall ClaudeConsole)"
 echo
 

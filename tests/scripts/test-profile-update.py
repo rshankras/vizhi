@@ -15,7 +15,7 @@ class ProfileUpdateTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix='vizhi-profile-update-')
         self.addCleanup(self.temp.cleanup)
         self.base = Path(self.temp.name)
-        self.default = root / 'profiles/VizhiCodex-Keypad.lp5'
+        self.default = root / 'profiles/VizhiCodex-Terminal.lp5'
         self.custom = self.base / 'custom.lp5'
         files, profile, _ = module.read_profile(self.default)
         profile['macroCommands'] = [{'name': 'my custom macro', 'keys': ['x', 'y']}]
@@ -50,7 +50,7 @@ class ProfileUpdateTests(unittest.TestCase):
         with self.assertRaises(FileExistsError): self.prepare('adopt-defaults')
         self.assertEqual(self.custom.read_bytes(), (self.base/'result/backup.lp5').read_bytes())
     def test_platform_and_product_mismatch_rejected_before_writes(self):
-        for updated in ['VizhiCodex-Windows.lp5', 'ClaudeConsole-Keypad.lp5']:
+        for updated in ['VizhiCodex-WindowsTerminal.lp5', 'VizhiClaudeCode-Terminal.lp5']:
             with self.assertRaises(ValueError): self.prepare(updated=root/'profiles'/updated)
             self.assertFalse((self.base/'result').exists())
     def test_unchanged_defaults_have_no_differences(self):

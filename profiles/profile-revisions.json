@@ -3,11 +3,11 @@
   "product": "VizhiCodex",
   "profiles": [
     {
-      "file": "VizhiCodex-Keypad.lp5",
+      "file": "VizhiCodex-Terminal.lp5",
       "layout_sha256": "952e1c15728fdc60e2b0466505c43c7f90be1d92462bfbbf01676c334e8583f1"
     },
     {
-      "file": "VizhiCodex-Windows.lp5",
+      "file": "VizhiCodex-WindowsTerminal.lp5",
       "layout_sha256": "952e1c15728fdc60e2b0466505c43c7f90be1d92462bfbbf01676c334e8583f1"
     }
   ],

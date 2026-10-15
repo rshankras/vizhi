@@ -4,7 +4,7 @@ Vizhi for Claude Code's footprint spans Logi's store, `~/.claude/claude-console/
 
 ## 1. Remove the plugin + profile (Logi Options+)
 
-In Logi Options+, **right‑click the Vizhi for Claude Code plugin → Uninstall** (or `logiplugintool uninstall ClaudeConsole`), and delete the imported **Vizhi for Claude Code — Keypad** profile. This is the actual uninstall.
+In Logi Options+, **right‑click the Vizhi for Claude Code plugin → Uninstall** (or `logiplugintool uninstall ClaudeConsole`), and delete the imported **Vizhi for Claude Code — Terminal** (or **— iTerm2** / **— Windows Terminal**) profile. This is the actual uninstall.
 
 ## 2. Run the cleanup script (macOS)
 

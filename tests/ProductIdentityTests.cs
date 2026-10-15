@@ -106,8 +106,15 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
             Assert.NotEmpty(layouts);
             foreach (var lp5 in layouts)
             {
-                var product = Path.GetFileName(lp5).Split('-')[0];
-                var prefix = $"${product}___Loupedeck.ClaudeConsolePlugin.Actions.";
+                // The download is named after the PRODUCT; the bindings inside name the PLUGIN,
+                // whose internal name is the install contract (tools/profile_names.py has the map).
+                var plugin = Path.GetFileName(lp5).Split('-')[0] switch
+                {
+                    "VizhiClaudeCode" => "ClaudeConsole",
+                    "VizhiCodex" => "VizhiCodex",
+                    var other => throw new Xunit.Sdk.XunitException($"{Path.GetFileName(lp5)}: unknown product prefix '{other}' — name it <Product>-<Host>.lp5"),
+                };
+                var prefix = $"${plugin}___Loupedeck.ClaudeConsolePlugin.Actions.";
                 var profile = JsonNode.Parse(ZipText(lp5, "ProfileInfo.json"));
                 var bound = 0;
                 foreach (var page in (JsonArray)profile["layout"]["layoutModes"][0]["workspaces"][0]["pressPages"])
@@ -130,12 +137,14 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         }
 
         [Theory]
-        [InlineData("ClaudeConsole-Keypad.lp5", "4146981DFFCD4C4EBCCE554873013DE8", "Vizhi for Claude Code — Keypad")]
-        [InlineData("ClaudeConsole-Windows.lp5", "9556D49413DC49B1968CA44D3C3C3303", "Vizhi for Claude Code — Keypad")]
-        [InlineData("ClaudeConsole-iTerm2.lp5", "01F94DE125BF41D9BF030BD7B7555357", "Vizhi for Claude Code — Keypad (iTerm2)")]
-        [InlineData("VizhiCodex-Keypad.lp5", "7B2C4E9A15D8436FA0C3E17D5B84962F", "Vizhi for Codex — Keypad")]
-        [InlineData("VizhiCodex-Windows.lp5", "90CC0B6D7FE0405AB63B311DCA7476B7", "Vizhi for Codex — Keypad")]
-        [InlineData("VizhiCodex-iTerm2.lp5", "3C9F9D52FBDF49D396AA1F2D4008694C", "Vizhi for Codex — Keypad (iTerm2)")]
+        // <Product>-<Host>.lp5 reads "<Product> — <Host>"; the GUIDs are the ones the files carried
+        // under their pre-2.4.0 names (ClaudeConsole-Keypad / -Windows / -iTerm2, VizhiCodex-…).
+        [InlineData("VizhiClaudeCode-Terminal.lp5", "4146981DFFCD4C4EBCCE554873013DE8", "Vizhi for Claude Code — Terminal")]
+        [InlineData("VizhiClaudeCode-iTerm2.lp5", "01F94DE125BF41D9BF030BD7B7555357", "Vizhi for Claude Code — iTerm2")]
+        [InlineData("VizhiClaudeCode-WindowsTerminal.lp5", "9556D49413DC49B1968CA44D3C3C3303", "Vizhi for Claude Code — Windows Terminal")]
+        [InlineData("VizhiCodex-Terminal.lp5", "7B2C4E9A15D8436FA0C3E17D5B84962F", "Vizhi for Codex — Terminal")]
+        [InlineData("VizhiCodex-iTerm2.lp5", "3C9F9D52FBDF49D396AA1F2D4008694C", "Vizhi for Codex — iTerm2")]
+        [InlineData("VizhiCodex-WindowsTerminal.lp5", "90CC0B6D7FE0405AB63B311DCA7476B7", "Vizhi for Codex — Windows Terminal")]
         public void A_layouts_guid_never_changes_and_its_display_name_is_the_products(String file, String guid, String display)
         {
             var lp5 = RepoFile("profiles", file);

@@ -50,7 +50,7 @@ The Windows build reaches Claude a different way than macOS does, and a few diff
 
 **Typing is if anything safer than on macOS.** macOS focuses Claude's Terminal tab and types into it in one atomic AppleScript run. Windows writes key events straight to the target session's *console handle*, which has no relationship to the focused window at all — a keypress reaches the intended Claude session or nothing whatsoever, and it cannot leak into another application even in principle.
 
-**Import the Windows layout.** Same as on macOS — the plugin is universal and carries no layout — but the file is Windows-specific, because a profile is bound to an application and the host here is Windows Terminal: Options+ → your keypad → profile menu (`⋯`) → **Import** → pick [`profiles/ClaudeConsole-Windows.lp5`](profiles/ClaudeConsole-Windows.lp5). (You can also just drag Vizhi for Claude Code's actions onto keys yourself; nothing depends on the profile.)
+**Import the Windows layout.** Same as on macOS — the plugin is universal and carries no layout — but the file is Windows-specific, because a profile is bound to an application and the host here is Windows Terminal: Options+ → your keypad → profile menu (`⋯`) → **Import** → pick [`profiles/VizhiClaudeCode-WindowsTerminal.lp5`](profiles/VizhiClaudeCode-WindowsTerminal.lp5). (You can also just drag Vizhi for Claude Code's actions onto keys yourself; nothing depends on the profile.)
 
 **The keypad can't follow your eyes between tabs.** Windows Terminal exposes no supported way to ask which tab is in front, so with several idle sessions open the plugin can't tell which one you're looking at. One session needs no pin and just works. So does a single session with a permission prompt up, even when others sit idle at their prompts — a pending approval outranks an idle session — and so does "exactly one session is waiting on you". Beyond that, **press a session key first** — pinning is exact, and every subsequent key goes to that session until you pin another or press the same key again to release it. Pressing a session key also brings its tab to the front.
 
@@ -78,7 +78,7 @@ Install from the **Logi Marketplace** inside Options+, or download the latest `C
 
 Rather than mapping nine keys by hand, import the ready-made profile to get the full layout instantly. **This is the normal setup, not a fallback** — since 2.2.0 the plugin is universal (no application binding, no packaged profile), so the layout is something you import, exactly once.
 
-1. Download **`ClaudeConsole-Keypad.lp5`** from the [keypad layouts page](https://www.rshankar.com/keypad-profiles/), or take it from [`profiles/`](profiles/) in this repo. For iTerm2 use **`ClaudeConsole-iTerm2.lp5`**; on Windows use **`ClaudeConsole-Windows.lp5`**.
+1. Download **`VizhiClaudeCode-Terminal.lp5`** from the [keypad layouts page](https://www.rshankar.com/keypad-profiles/), or take it from [`profiles/`](profiles/) in this repo. For iTerm2 use **`VizhiClaudeCode-iTerm2.lp5`**; on Windows use **`VizhiClaudeCode-WindowsTerminal.lp5`**.
 2. In **Logi Options+** → your **MX Creative Keypad**, open the profile menu (the `⋯` / profile dropdown) → **Import Profile** → pick the `.lp5`.
 3. It imports as a profile for that terminal's own entry in Options+ (**Terminal** or **iTerm2**), five pages deep, so it activates whenever that app is frontmost. Rearrange or rebind any key afterward. Use both terminals? Import both files.
 
@@ -233,7 +233,7 @@ The plugin's log is at `~/Library/Application Support/Logi/LogiPluginService/Log
 
 ## Uninstall
 
-In Logi Options+, **right‑click the Vizhi for Claude Code plugin → Uninstall** and delete the imported **Vizhi for Claude Code — Keypad** profile; then run the cleanup script the plugin left outside its own package:
+In Logi Options+, **right‑click the Vizhi for Claude Code plugin → Uninstall** and delete the imported **Vizhi for Claude Code — Terminal** (or **— iTerm2** / **— Windows Terminal**) profile; then run the cleanup script the plugin left outside its own package:
 
 ```bash
 bash ~/.claude/claude-console/scripts/uninstall.sh            # confirm, then remove
