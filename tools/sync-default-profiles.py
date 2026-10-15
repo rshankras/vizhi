@@ -27,6 +27,11 @@ PROFILES = [
 ]
 
 PREFIX = "$ClaudeConsole___Loupedeck.ClaudeConsolePlugin.Actions."
+
+# What Options+ lists the imported profile as. The product was renamed in 2.4.0; the GUID (the
+# profile's identity, `name` / `packageName`) is deliberately NOT touched here, so a re-import
+# replaces the earlier profile rather than adding a second one.
+DISPLAY_NAME = "Vizhi for Claude Code — Keypad"
 FIRST_PAGE = [
     "SessionSlotCommand___1",
     "SessionSlotCommand___2",
@@ -48,10 +53,13 @@ def read_documents(path: str) -> tuple[dict, dict]:
 
 
 def write_documents(path: str, profile: dict, preview: dict) -> None:
-    """Replace two JSON entries while preserving every other LP5 member and its metadata."""
+    """Replace three entries while preserving every other LP5 member and its metadata."""
     replacements = {
         "ProfileInfo.json": json.dumps(profile, indent=2).encode("utf-8"),
         "metadata/ProfilePreview.json": json.dumps(preview, indent=2).encode("utf-8"),
+        "metadata/LoupedeckPackage.yaml": (
+            f"type: Profile5\nname: {profile['name']}\ndisplayName: {DISPLAY_NAME}\nversion: 2.0.0.0\n"
+        ).encode("utf-8"),
     }
     directory = os.path.dirname(path)
     with tempfile.NamedTemporaryFile(dir=directory, suffix=".lp5", delete=False) as temporary:
@@ -105,6 +113,7 @@ def main() -> None:
     for path in PROFILES:
         profile, preview = read_documents(path)
         apply_first_page(profile)
+        profile["displayName"] = DISPLAY_NAME
         write_documents(path, profile, design_preview(preview))
         print(f"updated {os.path.relpath(path, ROOT)}")
 

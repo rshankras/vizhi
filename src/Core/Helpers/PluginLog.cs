@@ -17,6 +17,15 @@ namespace Loupedeck.ClaudeConsolePlugin
             PluginLog._productName = productName;
         }
 
+        /// <summary>
+        /// The product's display name, as its plugin constructor declared it (Vizhi for Claude
+        /// Code, Vizhi for Codex). The engine's user-facing text — the settings.json notices, the
+        /// on-screen Turn on dialog, the private-file errors — names the product through this, so
+        /// src/Core carries no product name of its own (the rule PR #104 set) and a rename is one
+        /// string in the product.
+        /// </summary>
+        internal static String ProductName => PluginLog._productName;
+
         internal static String Format(String productName, String text) => $"[{productName}] {text}";
 
         private static String Format(String text) => Format(PluginLog._productName, text);

@@ -1,10 +1,10 @@
 # Uninstall / clean reinstall
 
-Claude Console's footprint spans Logi's store, `~/.claude/claude-console/` (incl. the ~142 MB speech model), `/tmp/claude-console`, a Microphone permission, and — if you enabled live status — `~/.claude/settings.json`.
+Vizhi for Claude Code's footprint spans Logi's store, `~/.claude/claude-console/` (incl. the ~142 MB speech model), `/tmp/claude-console`, a Microphone permission, and — if you enabled live status — `~/.claude/settings.json`.
 
 ## 1. Remove the plugin + profile (Logi Options+)
 
-In Logi Options+, **right‑click the Claude Console plugin → Uninstall** (or `logiplugintool uninstall ClaudeConsole`), and delete the imported **Claude Console — Keypad** profile. This is the actual uninstall.
+In Logi Options+, **right‑click the Vizhi for Claude Code plugin → Uninstall** (or `logiplugintool uninstall ClaudeConsole`), and delete the imported **Vizhi for Claude Code — Keypad** profile. This is the actual uninstall.
 
 ## 2. Run the cleanup script (macOS)
 
@@ -23,7 +23,7 @@ If you only want the live-status wiring gone and the plugin kept: long-press a l
 
 Don't restore `settings.json.claude-console.bak` by hand to undo the plugin — it is a rolling backup of the state one change ago, useful if a write went wrong, not a pre-install snapshot.
 
-**Installs older than 2.2.0** registered their own application entry in Options+, and an uninstall left it behind still claiming Terminal.app — Claude Console stayed listed as if the uninstall had failed, and opening Terminal switched the keypad to a layout of dead keys. The script sweeps such orphans (only entries whose plugin is gone, never another vendor's); then restart the service so Options+ forgets it: `killall LogiPluginService`. Since 2.2.0 the plugin is universal and creates no entry, so there is nothing to sweep.
+**Installs older than 2.2.0** registered their own application entry in Options+, and an uninstall left it behind still claiming Terminal.app — Vizhi for Claude Code stayed listed as if the uninstall had failed, and opening Terminal switched the keypad to a layout of dead keys. The script sweeps such orphans (only entries whose plugin is gone, never another vendor's); then restart the service so Options+ forgets it: `killall LogiPluginService`. Since 2.2.0 the plugin is universal and creates no entry, so there is nothing to sweep.
 
 ## Windows
 

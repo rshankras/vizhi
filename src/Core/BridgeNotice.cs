@@ -34,7 +34,7 @@ namespace Loupedeck.ClaudeConsolePlugin
         /// opens (pinned by test), so the card says only what happened and that it is reversible.
         /// </summary>
         internal static String Wired(Int32 hookCount, Boolean settingsApplyLive) =>
-            $"Claude Console added its status line and {hookCount} hooks to ~/.claude/settings.json so the " +
+            $"{PluginLog.ProductName} added its status line and {hookCount} hooks to ~/.claude/settings.json so the " +
             (settingsApplyLive
                 ? "live keys work — running sessions pick it up on their next activity. "
                 : "live keys work from your next Claude Code session. ") +
@@ -55,7 +55,7 @@ namespace Loupedeck.ClaudeConsolePlugin
 
         /// <summary>The message posted when Disable Live Status (or a marker found at load) removed the wiring.</summary>
         internal static String Unwired() =>
-            "Claude Console removed its status line and hooks from ~/.claude/settings.json. Your own " +
+            $"{PluginLog.ProductName} removed its status line and hooks from ~/.claude/settings.json. Your own " +
             "entries were left alone and the previous file was backed up. The live keys read Off until " +
             "you enable them again.";
 
@@ -95,7 +95,7 @@ namespace Loupedeck.ClaudeConsolePlugin
 
         /// <summary>The message posted when Enable could not touch settings.json at all.</summary>
         internal static String EnableFailed() =>
-            "Claude Console could not edit ~/.claude/settings.json (it is a symlink, not valid JSON, or " +
+            $"{PluginLog.ProductName} could not edit ~/.claude/settings.json (it is a symlink, not valid JSON, or " +
             "kept changing). Nothing was written. Fix the file, then press the key again.";
 
         /// <summary>Where the Windows-Terminal notice points — the FAQ's Windows section.</summary>

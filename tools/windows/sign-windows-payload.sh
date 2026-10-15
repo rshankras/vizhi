@@ -45,7 +45,7 @@ TSA="${CODESIGN_TSA:-http://time.certum.pl}"
 
 # The description and URL land in the file's Properties → Digital Signatures tab on Windows.
 case "$PRODUCT" in
-  ClaudeConsole) NAME="Claude Console";  URL="https://vizhi.dev/claude-console/" ;;
+  ClaudeConsole) NAME="Vizhi for Claude Code"; URL="https://vizhi.dev/claude-console/" ;;
   VizhiCodex)    NAME="Vizhi for Codex"; URL="https://vizhi.dev/vizhi-codex/" ;;
   *) echo "error: unsupported product '$PRODUCT' (expected ClaudeConsole or VizhiCodex)." >&2; exit 2 ;;
 esac

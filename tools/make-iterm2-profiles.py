@@ -35,7 +35,7 @@ PROFILES = (
     (
         "profiles/ClaudeConsole-Keypad.lp5",
         "profiles/ClaudeConsole-iTerm2.lp5",
-        "Claude Console — Keypad (iTerm2)",
+        "Vizhi for Claude Code — Keypad (iTerm2)",
         "01F94DE125BF41D9BF030BD7B7555357",
     ),
     (

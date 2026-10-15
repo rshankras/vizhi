@@ -10,7 +10,7 @@ namespace Loupedeck.ClaudeConsolePlugin
     using Loupedeck.ClaudeConsolePlugin.Platform;
 
     /// <summary>
-    /// Claude Console's Windows package lifecycle, independent of Load(), polling and SDK UI.
+    /// The product's Windows package lifecycle, independent of Load(), polling and SDK UI.
     /// Options+ calls Uninstall then Install for replacements too. Keep ONLY our previous wiring
     /// in a receipt outside the package, so a replacement retains the user's preference.
     /// Never restore a whole settings backup over subsequent user edits.
@@ -272,7 +272,7 @@ namespace Loupedeck.ClaudeConsolePlugin
 
         private void Record(String operation, String detail)
         {
-            var message = $"Claude Console lifecycle {operation}: {detail}";
+            var message = $"{PluginLog.ProductName} lifecycle {operation}: {detail}";
             PluginLog.Info(message);
             try
             {
