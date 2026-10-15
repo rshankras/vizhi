@@ -604,6 +604,24 @@ All notable changes to Claude Console are documented here. Format based on
   answering (a quit-confirmation sheet, say) pauses only its own ask. Both products, since the
   driver sits below the agent seam.
 
+### Changed
+- **Claude Console is now Vizhi for Claude Code.** The name says what it is for and matches its
+  siblings, Vizhi for Codex and Vizhi for ChatGPT. Options+, the Marketplace listing, the keypad
+  layouts, the settings.json notices, the on-screen Turn on dialog, the uninstall script and the
+  Windows file descriptions use the new name. Nothing else changes: the internal name stays
+  `ClaudeConsole`, so an update keeps your layouts, key bindings, live-status wiring, microphone
+  permission and settings. A layout imported earlier keeps its old name until you import the new
+  file, which replaces it rather than duplicating it (same GUID). The microphone prompt still
+  reads "Claude Console" until the voice helper is rebuilt (#140). The runtime folder is still
+  `~/.claude/claude-console/`, and the repository is now `rshankras/vizhi`.
+- **The layout downloads are named after the product and the terminal they bind to.**
+  `ClaudeConsole-Keypad.lp5` → `VizhiClaudeCode-Terminal.lp5`, `ClaudeConsole-iTerm2.lp5` →
+  `VizhiClaudeCode-iTerm2.lp5`, `ClaudeConsole-Windows.lp5` → `VizhiClaudeCode-WindowsTerminal.lp5`,
+  and `VizhiCodex-Keypad` / `-Windows` → `VizhiCodex-Terminal` / `-WindowsTerminal`. In Options+
+  the profiles read "Vizhi for Claude Code — Terminal", "— iTerm2", "— Windows Terminal" (and
+  the same for Vizhi for Codex) instead of "— Keypad". Same GUIDs, so importing a new file
+  replaces the profile you had.
+
 ### Fixed
 - **Windows: a helper dated in the future no longer withholds Yes/No and live values after
   install (#125).** The installer keeps the package's ZIP timestamp, and ZIP times carry no

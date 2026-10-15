@@ -36,8 +36,20 @@ ROOT="$(mktemp -d "${TMPDIR:-/tmp}/codex-hook-tests.XXXXXX")"
 export CODEX_CONSOLE_IPC_ROOT="$ROOT"
 trap 'rm -rf "$ROOT"' EXIT
 
-TTY_NAME="$(basename "$(ps -o tty= -p $$ 2>/dev/null | tr -d ' \t')" 2>/dev/null)"
-[ -n "$TTY_NAME" ] && [ "$TTY_NAME" != "??" ] || TTY_NAME="shared"
+# The hook keys the session by the first controlling terminal in its parent chain (six hops),
+# not by its own tty. Mirror that here, or the expectation drifts from the hook whenever the
+# suite runs from a shell with no tty whose ancestor has one — an agent's tool shell, say:
+# the hook then writes ttysNNN.json while this script waited for shared.json.
+TTY_NAME="shared"
+pid=$$
+for _ in 1 2 3 4 5 6; do
+    t="$(ps -o tty= -p "$pid" 2>/dev/null | tr -d '[:space:]')"
+    case "$t" in ''|'?'|'??') ;; *) TTY_NAME="${t##*/}"; break ;; esac
+    parent="$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d '[:space:]')"
+    case "$parent" in ''|*[!0-9]*) break ;; esac
+    { [ "$parent" -le 1 ] || [ "$parent" = "$pid" ]; } && break
+    pid="$parent"
+done
 STATE="$ROOT/sessions/$TTY_NAME.json"
 
 # A real payload, trimmed from a captured codex-cli 0.145.0 PermissionRequest.

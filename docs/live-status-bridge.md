@@ -2,7 +2,7 @@
 
 The live keys (Cost / Context / Activity, and the approval badge) read state files under a private `/tmp/claude-console/` directory that Claude Code writes via a status‑line handler (`sessions/`) and five hooks (`activity/`). Everything in it is owner‑only (0700 dirs / 0600 files).
 
-Turning this on edits `~/.claude/settings.json`, so the plugin adds wiring only when you ask — by pressing a live key (see the [README](../README.md#the-live-status-bridge)). On every macOS load the plugin writes its two scripts to `~/.claude/claude-console/scripts/` (its own folder). An update may migrate only commands already marked as Claude Console's to their current guarded form; it never adds wiring or touches another command.
+Turning this on edits `~/.claude/settings.json`, so the plugin adds wiring only when you ask — by pressing a live key (see the [README](../README.md#the-live-status-bridge)). On every macOS load the plugin writes its two scripts to `~/.claude/claude-console/scripts/` (its own folder). An update may migrate only commands already marked as Vizhi for Claude Code's to their current guarded form; it never adds wiring or touches another command.
 
 ## What the switch writes
 

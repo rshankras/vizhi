@@ -1,6 +1,6 @@
 # Multi-Agent Architecture — sharing one codebase across agents
 
-How Claude Console, a Codex CLI console, and a future agent-agnostic plugin share one engine.
+How Vizhi for Claude Code, a Codex CLI console, and a future agent-agnostic plugin share one engine.
 Written 2026-08-18.
 
 **Decisions taken.** **One repo builds every product** (layout B below). The Codex product lists as
@@ -122,7 +122,7 @@ every state file, and a documented contract in `docs/ipc-schema.md`.
 ## Coexistence: two plugins, one keypad — ANSWERED ON HARDWARE (2026-08-18)
 
 Both plugins bind their Options+ application to the terminal, and **two applications claiming the
-same bundle cannot both activate**. With Claude Console and Vizhi for Codex installed together, one
+same bundle cannot both activate**. With Vizhi for Claude Code and Vizhi for Codex installed together, one
 wins whenever Terminal is frontmost and the other is unreachable — selecting the loser in Options+
 does not survive switching to Terminal. The registration document has no priority or ordering field
 (`name`, `displayName`, `deviceType`, `nativePluginName`, `processOrBundleName`, `modes`,

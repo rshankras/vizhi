@@ -9,16 +9,16 @@ type: plugin4
 name: ClaudeConsole
 
 # Plugin name that is shown to the user.
-displayName: Claude Console
+displayName: Vizhi for Claude Code
 
 # Short description of the plugin.
-description: Control Claude Code in Apple Terminal or Windows Terminal from the MX Creative Keypad.
+description: Control Claude Code in Apple Terminal, iTerm2 or Windows Terminal from the MX Creative Keypad.
 
 # Name of the plugin library file.
 pluginFileName: ClaudeConsolePlugin.dll
 
 # Plugin version.
-version: 2.3.2
+version: 2.4.0
 
 # Author of the plugin. The author can be a company or an individual developer.
 author: S.Ravi Shankar

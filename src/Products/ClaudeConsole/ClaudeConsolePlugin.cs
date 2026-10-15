@@ -7,7 +7,7 @@ namespace Loupedeck.ClaudeConsolePlugin
     using Loupedeck.ClaudeConsolePlugin.Agents;
 
     /// <summary>
-    /// Claude Console — Logitech MX Creative Keypad plugin for Claude Code.
+    /// Vizhi for Claude Code (Claude Console until 2.3.2) — Logitech MX Creative Keypad plugin for Claude Code.
     /// Physical LCD-key controls for AI-assisted coding, bridged to Claude Code over file IPC.
     ///
     /// Commands and adjustments are AUTO-DISCOVERED by the SDK — every PluginDynamicCommand /
@@ -28,7 +28,7 @@ namespace Loupedeck.ClaudeConsolePlugin
 
         public ClaudeConsolePlugin()
         {
-            PluginLog.Init(this.Log, "Claude Console");
+            PluginLog.Init(this.Log, "Vizhi for Claude Code");
             PluginResources.Init(this.Assembly);
 
             // Declared HERE, not in Load(): the SDK constructs every action in between, and an

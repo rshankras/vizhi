@@ -25,24 +25,20 @@ Run from the repo root:  python3 tools/make-codex-profile.py
 
 import json
 import os
+import sys
 import zipfile
 
-DISPLAY = "Vizhi for Codex — Keypad"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import profile_names as names  # noqa: E402
+
 PLUGIN = "VizhiCodex"
 
 # One product, two host-terminal identities. These GUIDs are stable so importing an updated
 # download refreshes the same profile rather than leaving another duplicate in Options+.
+# (source Claude layout, Codex layout); GUIDs and display names live in tools/profile_names.py.
 PROFILES = (
-    (
-        "profiles/ClaudeConsole-Keypad.lp5",
-        "profiles/VizhiCodex-Keypad.lp5",
-        "7B2C4E9A15D8436FA0C3E17D5B84962F",
-    ),
-    (
-        "profiles/ClaudeConsole-Windows.lp5",
-        "profiles/VizhiCodex-Windows.lp5",
-        "90CC0B6D7FE0405AB63B311DCA7476B7",
-    ),
+    ("VizhiClaudeCode-Terminal.lp5", "VizhiCodex-Terminal.lp5"),
+    ("VizhiClaudeCode-WindowsTerminal.lp5", "VizhiCodex-WindowsTerminal.lp5"),
 )
 
 # Bindings to drop, and why each one does not apply to Codex.
@@ -187,7 +183,9 @@ def update_preview(preview, profile) -> None:
             entry["description"] = entry["description"].replace("Claude", "Codex")
 
 
-def build_profile(src: str, dst: str, guid: str) -> None:
+def build_profile(src_name: str, dst_name: str) -> None:
+    src, dst = names.path(src_name), names.path(dst_name)
+    guid, display = names.guid(dst_name), names.display_name(dst_name)
     with zipfile.ZipFile(src) as zin:
         items = zin.infolist()
         files = {item.filename: zin.read(item.filename) for item in items}
@@ -196,7 +194,7 @@ def build_profile(src: str, dst: str, guid: str) -> None:
     profile["name"] = guid
     if profile.get("packageName"):
         profile["packageName"] = guid
-    profile["displayName"] = DISPLAY
+    profile["displayName"] = display
     # applicationName stays the host terminal's own entry; this profile USES the plugin, it is not
     # owned by an application registration from the universal plugin.
     profile["additionalNativePluginNames"] = [
@@ -217,9 +215,7 @@ def build_profile(src: str, dst: str, guid: str) -> None:
     files["metadata/ProfilePreview.json"] = json.dumps(preview, indent=2).encode("utf-8")
 
     # Package and dependency metadata must identify the same product/profile as ProfileInfo.
-    files["metadata/LoupedeckPackage.yaml"] = (
-        f"type: Profile5\nname: {guid}\ndisplayName: {DISPLAY}\nversion: 2.0.0.0\n"
-    ).encode("utf-8")
+    files["metadata/LoupedeckPackage.yaml"] = names.package_yaml(dst_name)
     files["metadata/AdvancedInfo.json"] = json.dumps(
         {"additionalPluginNames": [PLUGIN]}, indent=2
     ).encode("utf-8")
@@ -231,8 +227,8 @@ def build_profile(src: str, dst: str, guid: str) -> None:
 
 
 def main() -> None:
-    for src, dst, guid in PROFILES:
-        build_profile(src, dst, guid)
+    for src, dst in PROFILES:
+        build_profile(src, dst)
 
 
 if __name__ == "__main__":

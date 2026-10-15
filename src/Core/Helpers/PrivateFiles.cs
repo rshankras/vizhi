@@ -21,7 +21,7 @@ namespace Loupedeck.ClaudeConsolePlugin
             var directory = Directory.CreateDirectory(path);
             if (directory.LinkTarget != null)
             {
-                throw new IOException($"Claude Console refuses to use symlinked directory {path}.");
+                throw new IOException($"{PluginLog.ProductName} refuses to use symlinked directory {path}.");
             }
             if (OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
             {
@@ -35,11 +35,11 @@ namespace Loupedeck.ClaudeConsolePlugin
             var file = new FileInfo(path);
             if (!file.Exists)
             {
-                throw new FileNotFoundException("Claude Console private file is missing.", path);
+                throw new FileNotFoundException($"{PluginLog.ProductName} private file is missing.", path);
             }
             if (file.LinkTarget != null)
             {
-                throw new IOException($"Claude Console refuses to use symlinked file {path}.");
+                throw new IOException($"{PluginLog.ProductName} refuses to use symlinked file {path}.");
             }
             if (OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
             {

@@ -92,7 +92,7 @@ The keypad never shows a value the agent did not report:
 2. Double-click `VizhiCodex_<version>.lplug4` → Options+ asks to install.
 3. **Import the layout.** The plugin is universal — no application binding, no layout of its
    own — so nothing appears until you give it keys. From the release, import
-   `VizhiCodex-Keypad.lp5` on macOS or `VizhiCodex-Windows.lp5` on Windows: Options+ → keypad →
+   `VizhiCodex-Terminal.lp5` on macOS or `VizhiCodex-WindowsTerminal.lp5` on Windows: Options+ → keypad →
    profile menu → **Import Profile**. It lands on Terminal or Windows Terminal with the Codex keys
    populated. Or add the terminal yourself and drag the **Vizhi for Codex** actions on by hand.
 4. **Trust the hooks.** Your next Codex session opens with **"Hooks need review — 7 hooks are

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Claude Console — leftover-data cleanup, and the no-keypad way to turn live status off.
+# Vizhi for Claude Code (formerly Claude Console) — leftover-data cleanup, and the no-keypad way to turn live status off.
 # (This is NOT the plugin uninstaller.)
 #
-# To uninstall the PLUGIN, do it in Logi Options+: right-click the Claude Console
+# To uninstall the PLUGIN, do it in Logi Options+: right-click the Vizhi for Claude Code
 # plugin -> Uninstall (or run: logiplugintool uninstall ClaudeConsole), and delete the
-# imported "Claude Console — Keypad" profile there too. That is the actual uninstall.
+# imported "Vizhi for Claude Code — Terminal" (or — iTerm2 / — Windows Terminal) profile there too. That is the actual uninstall.
 #
 # This script clears the app-level leftovers that Logi Options+ can't see and never removes:
 #   • our statusLine + hooks in ~/.claude/settings.json (present only if you pressed Enable Live
@@ -292,7 +292,7 @@ PY
 # is how the live keys know to read Off (and, for anyone still on a 2.2.0 pre-release that wired
 # on load, what stops the next load wiring it back).
 if [ "$UNWIRE_ONLY" -eq 1 ]; then
-  echo "Claude Console — removing the live-status wiring from $SETTINGS"
+  echo "Vizhi for Claude Code — removing the live-status wiring from $SETTINGS"
   unwire_settings apply || exit $?
   echo "  Off marker set: $OPT_OUT  (press a live key to turn it back on)"
   echo "Takes effect on your next Claude Code session. The plugin and voice are untouched;"
@@ -300,7 +300,7 @@ if [ "$UNWIRE_ONLY" -eq 1 ]; then
   exit 0
 fi
 
-echo "Claude Console — leftover-data cleanup."
+echo "Vizhi for Claude Code — leftover-data cleanup."
 echo "This does NOT remove the plugin (uninstall that in Logi Options+). It clears the"
 echo "app-level leftovers Logi can't see. These will be removed:"
 echo
@@ -316,8 +316,8 @@ echo "  • Microphone permission   tccutil reset Microphone $HELPER_ID"
 [ -f "$MARKER" ] && echo "  • crash-disable marker    $MARKER"
 [ -f "$LINK" ]   && echo "  • dev plugin link         $LINK  (+ restart LogiPluginService)"
 echo
-echo "To remove the plugin itself: Logi Options+ → right-click Claude Console → Uninstall"
-echo "(and delete the 'Claude Console — Keypad' profile there). NOT touched by this script:"
+echo "To remove the plugin itself: Logi Options+ → right-click Vizhi for Claude Code → Uninstall"
+echo "(and delete the 'Vizhi for Claude Code — Terminal' (or iTerm2 / Windows Terminal) profile there). NOT touched by this script:"
 echo "  • the plugin + profile in Logi Options+  (or: logiplugintool uninstall ClaudeConsole)"
 echo
 
@@ -343,4 +343,4 @@ fi
 
 echo
 echo "Leftovers cleared. If you haven't already, uninstall the plugin + profile in"
-echo "Logi Options+ (right-click Claude Console → Uninstall) — that's the actual removal."
+echo "Logi Options+ (right-click Vizhi for Claude Code → Uninstall) — that's the actual removal."

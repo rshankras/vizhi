@@ -1,4 +1,4 @@
-# Developing Claude Console
+# Developing Vizhi for Claude Code
 
 Contributor rules and the non-obvious traps are in [CLAUDE.md](../CLAUDE.md); the architecture (one engine, one package per agent) in [multi-agent-architecture.md](multi-agent-architecture.md). This page is the build / test / package sequence.
 
@@ -22,7 +22,7 @@ scripts/             the shell writers the agents run (statusline, activity, cod
 tools/               icon pipeline, profile sync, voice bundle, packaging
 ```
 
-Products version and release independently — Claude Console and **Vizhi for Codex** build from the same core.
+Products version and release independently — Vizhi for Claude Code and **Vizhi for Codex** build from the same core.
 
 ## Build from source
 

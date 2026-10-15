@@ -12,13 +12,13 @@ name: VizhiCodex
 displayName: Vizhi for Codex
 
 # Short description of the plugin.
-description: Control OpenAI Codex in Apple Terminal or Windows Terminal from the MX Creative Keypad.
+description: Control OpenAI Codex in Apple Terminal, iTerm2 or Windows Terminal from the MX Creative Keypad.
 
 # Name of the plugin library file.
 pluginFileName: VizhiCodexPlugin.dll
 
 # Plugin version.
-version: 1.6.2
+version: 1.7.0
 
 # Author of the plugin. The author can be a company or an individual developer.
 author: S.Ravi Shankar

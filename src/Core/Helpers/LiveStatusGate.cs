@@ -227,7 +227,7 @@ namespace Loupedeck.ClaudeConsolePlugin
                 Boolean? answer = null;
                 try
                 {
-                    answer = _bridge.Prompt("Claude Console", text, yes, no, seconds, cts.Token);
+                    answer = _bridge.Prompt(PluginLog.ProductName, text, yes, no, seconds, cts.Token);
                 }
                 catch (Exception ex)
                 {

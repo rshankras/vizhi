@@ -1,6 +1,6 @@
 # Marketplace Listing Copy
 
-The exact text entered in the Logitech Marketplace submission form ([marketplace.logitech.com/contribute](https://marketplace.logitech.com/contribute)). **The 2.3.1 copy below is current** (submitted 2026-09-24; the package and these texts as submitted are in `~/Downloads/Claude Console/ClaudeConsole-2.3.1-release/`); the 2.2.2, 2.2.1 and 2.2.0 release notes it replaced follow it, and the 2.0.x copy is kept at the bottom for reference. Process and packaging steps live in [SUBMISSION.md](../SUBMISSION.md).
+The exact text entered in the Logitech Marketplace submission form ([marketplace.logitech.com/contribute](https://marketplace.logitech.com/contribute)). **The 2.3.1 copy below is current** (submitted 2026-09-24; the package and these texts as submitted are in `~/Downloads/Vizhi for Claude Code/ClaudeConsole-2.3.1-release/`); the 2.2.2, 2.2.1 and 2.2.0 release notes it replaced follow it, and the 2.0.x copy is kept at the bottom for reference. Process and packaging steps live in [SUBMISSION.md](../SUBMISSION.md).
 
 ## Auto-filled fields (from `LoupedeckPackage.yaml`)
 
@@ -8,7 +8,7 @@ These are read out of the uploaded `.lplug4` — the form fills them itself. To 
 
 | Field | Value |
 |---|---|
-| Name | Claude Console |
+| Name | Vizhi for Claude Code (formerly Claude Console — ask the PM to rename the listing; the fields below are the 2.3.x copy with the name updated) |
 | Author | S.Ravi Shankar |
 | Operating system | macOS, Windows (from `pluginFolderMac` + `pluginFolderWin`) |
 | Capabilities | `HasNoApplication` — universal, binds no application (#23) |
@@ -50,7 +50,7 @@ Works in Apple Terminal or Windows Terminal.
 2.3.1 (submitted 2026-09-24), 857 characters. Leads with the Windows uninstall fix Logitech named as the release blocker (#55), then includes the 2.2.3 engine fixes, which were never submitted on their own:
 
 ```markdown
-**Windows uninstall now cleans up after itself.** When you uninstall Claude Console in Options+, it removes its hooks and status line from Claude Code's settings.json. You no longer need to turn live status off first. Your own settings, hooks and formatting are left as they were, and the previous file is backed up.
+**Windows uninstall now cleans up after itself.** When you uninstall Vizhi for Claude Code in Options+, it removes its hooks and status line from Claude Code's settings.json. You no longer need to turn live status off first. Your own settings, hooks and formatting are left as they were, and the previous file is backed up.
 
 **Updates keep live status on.** Updating the plugin puts your live-status setup back automatically. A reinstall after a real uninstall starts fresh, and the live keys ask before changing anything.
 
@@ -107,7 +107,7 @@ The PM offered (2026-09-04) to help with the description wording and asked for a
 ```markdown
 **2.2.0 — the QA retest release.**
 
-- **Now a universal plugin**: it binds to no application. After installing, import the keypad layout from the GitHub release (linked below) onto your Terminal profile, or drag the Claude Console actions where you want them.
+- **Now a universal plugin**: it binds to no application. After installing, import the keypad layout from the GitHub release (linked below) onto your Terminal profile, or drag the Vizhi for Claude Code actions where you want them.
 - **Live status is opt-in.** The plugin no longer edits your Claude Code settings on its own — press a live key and confirm; hold it to turn back off.
 - **The No key now rejects.** Yes confirms the permission prompt, No dismisses it, and neither acts when there's nothing to approve.
 - **Typing works on every keyboard layout** — no more wrong characters on AZERTY or QWERTZ.
@@ -166,7 +166,7 @@ Works with Claude Code in Apple Terminal or Windows Terminal.
 First submission, so written as an introduction rather than a changelog (Marketplace users never saw 1.x). Future submissions should switch to a real what's-changed format. No version heading — the page already shows the version from the package. Used 967:
 
 ```markdown
-Claude Console turns the MX Creative Keypad's nine LCD keys into a control surface for Claude Code.
+Vizhi for Claude Code turns the MX Creative Keypad's nine LCD keys into a control surface for Claude Code.
 
 - **A key per session** — up to 3 Claude sessions, each key showing project, state & context; press one to focus it
 - **Live status** — model, running cost & context, straight from Claude Code
@@ -175,5 +175,5 @@ Claude Console turns the MX Creative Keypad's nine LCD keys into a control surfa
 - **Git** — commit, diff, push, create PR
 - **Offline voice** — dictate a prompt or jump to a project by name; transcription runs locally, no cloud, no API keys
 
-Setup: install, then import the ready-made keypad layout from the GitHub release — or drag the Claude Console actions onto your own Terminal profile. Live keys are opt-in: one press turns them on. Works with Apple Terminal (macOS) or Windows Terminal; sessions in other terminals are not shown.
+Setup: install, then import the ready-made keypad layout from the GitHub release — or drag the Vizhi for Claude Code actions onto your own Terminal profile. Live keys are opt-in: one press turns them on. Works with Apple Terminal (macOS) or Windows Terminal; sessions in other terminals are not shown.
 ```

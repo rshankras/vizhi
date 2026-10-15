@@ -1,10 +1,10 @@
-# Claude Console
+# Vizhi for Claude Code
 
 **Physical hardware controls for [Claude Code](https://claude.com/claude-code) on the Logitech MX Creative Keypad. macOS and Windows.**
 
 > Press a button. Ship code.
 
-Claude Console turns the MX Creative Keypad's nine LCD keys into a control surface for Claude Code: a key per session, one‑press prompts and git actions, answering its permission prompts, terminal navigation, screenshots into the conversation, and **fully offline voice** — dictate a prompt or jump into a project by speaking its name. No cloud, no API keys.
+Vizhi for Claude Code (formerly Claude Console) turns the MX Creative Keypad's nine LCD keys into a control surface for Claude Code: a key per session, one‑press prompts and git actions, answering its permission prompts, terminal navigation, screenshots into the conversation, and **fully offline voice** — dictate a prompt or jump into a project by speaking its name. No cloud, no API keys.
 
 ---
 
@@ -50,7 +50,7 @@ The Windows build reaches Claude a different way than macOS does, and a few diff
 
 **Typing is if anything safer than on macOS.** macOS focuses Claude's Terminal tab and types into it in one atomic AppleScript run. Windows writes key events straight to the target session's *console handle*, which has no relationship to the focused window at all — a keypress reaches the intended Claude session or nothing whatsoever, and it cannot leak into another application even in principle.
 
-**Import the Windows layout.** Same as on macOS — the plugin is universal and carries no layout — but the file is Windows-specific, because a profile is bound to an application and the host here is Windows Terminal: Options+ → your keypad → profile menu (`⋯`) → **Import** → pick [`profiles/ClaudeConsole-Windows.lp5`](profiles/ClaudeConsole-Windows.lp5). (You can also just drag Claude Console's actions onto keys yourself; nothing depends on the profile.)
+**Import the Windows layout.** Same as on macOS — the plugin is universal and carries no layout — but the file is Windows-specific, because a profile is bound to an application and the host here is Windows Terminal: Options+ → your keypad → profile menu (`⋯`) → **Import** → pick [`profiles/VizhiClaudeCode-WindowsTerminal.lp5`](profiles/VizhiClaudeCode-WindowsTerminal.lp5). (You can also just drag Vizhi for Claude Code's actions onto keys yourself; nothing depends on the profile.)
 
 **The keypad can't follow your eyes between tabs.** Windows Terminal exposes no supported way to ask which tab is in front, so with several idle sessions open the plugin can't tell which one you're looking at. One session needs no pin and just works. So does a single session with a permission prompt up, even when others sit idle at their prompts — a pending approval outranks an idle session — and so does "exactly one session is waiting on you". Beyond that, **press a session key first** — pinning is exact, and every subsequent key goes to that session until you pin another or press the same key again to release it. Pressing a session key also brings its tab to the front.
 
@@ -69,7 +69,7 @@ The Windows build reaches Claude a different way than macOS does, and a few diff
 Install from the **Logi Marketplace** inside Options+, or download the latest `ClaudeConsole_<ver>.lplug4` from [vizhi.dev](https://vizhi.dev/claude-console/#install), then:
 
 1. **Double-click it** — Logi Options+ registers the plugin. (Or, with the Logi Plugin Tool: `logiplugintool install ./ClaudeConsole_<ver>.lplug4`.) If macOS blocks it, right-click → **Open**, or run `xattr -dr com.apple.quarantine ClaudeConsole_<ver>.lplug4`.
-2. **Put the keys on your terminal.** The plugin is *universal*: it binds to no application and ships no layout of its own, so nothing appears on the keypad until you give it keys. The quickest way is the ready-made layout — see [Import the ready-made layout](#import-the-ready-made-layout) just below (two clicks). Or build your own: in Options+ add **Terminal** (or **iTerm2**) as an application, then drag any **Claude Console** actions onto its profile.
+2. **Put the keys on your terminal.** The plugin is *universal*: it binds to no application and ships no layout of its own, so nothing appears on the keypad until you give it keys. The quickest way is the ready-made layout — see [Import the ready-made layout](#import-the-ready-made-layout) just below (two clicks). Or build your own: in Options+ add **Terminal** (or **iTerm2**) as an application, then drag any **Vizhi for Claude Code** actions onto its profile.
 3. On first use, grant **Accessibility** to the Logi Plugin Service (so it can type into your terminal). For **voice**, press the Dictate key and grant **Microphone** when prompted — the helper and speech model install themselves on first use. The **Screenshot** key asks for **Screen Recording** the first time.
 
 > The live **Cost / Context / Activity** keys are **opt-in**: the plugin never edits your Claude Code settings on its own — they read **Set up** until you press one of them, and the press itself is the prompt. See [The live status bridge](#the-live-status-bridge).
@@ -78,7 +78,7 @@ Install from the **Logi Marketplace** inside Options+, or download the latest `C
 
 Rather than mapping nine keys by hand, import the ready-made profile to get the full layout instantly. **This is the normal setup, not a fallback** — since 2.2.0 the plugin is universal (no application binding, no packaged profile), so the layout is something you import, exactly once.
 
-1. Download **`ClaudeConsole-Keypad.lp5`** from the [keypad layouts page](https://www.rshankar.com/keypad-profiles/), or take it from [`profiles/`](profiles/) in this repo. For iTerm2 use **`ClaudeConsole-iTerm2.lp5`**; on Windows use **`ClaudeConsole-Windows.lp5`**.
+1. Download **`VizhiClaudeCode-Terminal.lp5`** from the [layouts page on vizhi.dev](https://vizhi.dev/layouts/), or take it from [`profiles/`](profiles/) in this repo. For iTerm2 use **`VizhiClaudeCode-iTerm2.lp5`**; on Windows use **`VizhiClaudeCode-WindowsTerminal.lp5`**.
 2. In **Logi Options+** → your **MX Creative Keypad**, open the profile menu (the `⋯` / profile dropdown) → **Import Profile** → pick the `.lp5`.
 3. It imports as a profile for that terminal's own entry in Options+ (**Terminal** or **iTerm2**), five pages deep, so it activates whenever that app is frontmost. Rearrange or rebind any key afterward. Use both terminals? Import both files.
 
@@ -95,14 +95,14 @@ Notes:
 - Import once. Reinstalling or updating the plugin never touches your profile — it belongs to the terminal's entry in Options+, not to the plugin — so the keys simply light up again after an update.
 - The keys type only into **Terminal.app** and **iTerm2**: every typing key focuses Claude's own tab in the app that owns it before it types — it will not type into Ghostty, Warp, an editor's terminal or any other app. Sessions running in another terminal are **not shown on the Session keys** at all (the plugin log names each one it skipped). With sessions in both apps, each key goes to the right one; New Tab, New Claude and Go to Project open in the terminal you are using. In iTerm2, Go to Project reuses an idle tab only with [shell integration](https://iterm2.com/documentation-shell-integration.html) installed; otherwise it always opens a new tab.
 - Session 4–6, Screenshot, Voice Draft, Context, Activity, Mode, Terminal and the window keys exist as actions but aren't on the shipped pages — drag them on wherever you like.
-- Already have a Terminal or iTerm2 profile you like? Skip the import and drag the **Claude Console** actions onto it instead.
+- Already have a Terminal or iTerm2 profile you like? Skip the import and drag the **Vizhi for Claude Code** actions onto it instead.
 - **Don't open the live keys in the Options+ icon editor** (sessions, Yes/No, Cost/Context/Activity): it freezes them into a snapshot. [Why, and the fix](docs/troubleshooting.md#the-session-keys-are-stuck).
 
 ## The live status bridge
 
 The live keys read state files under a private `/tmp/claude-console/` directory that Claude Code writes via a status‑line handler (Cost / Context) and five hooks (Activity, and the approval badge). Everything in it is owner‑only (0700 dirs / 0600 files), so your prompts and session state are never readable by other users on the Mac.
 
-**Turning this on edits your Claude Code settings, so adding the wiring happens only when you ask — installation never opts you in.** The switch is the key itself: press a live key once and it flashes *Press again*, posts a card in Options+ stating the change and, on macOS, asks on screen — **Not now** / **Turn on**. *Turn on*, or a second press of the same key within 15 seconds, merges a `statusLine` handler + five hooks into `~/.claude/settings.json`. It only **appends** hooks that aren't already there, **chains** an existing `statusLine` (yours still renders), and takes a **rolling backup** — `settings.json.claude-console.bak` is rewritten before *every* change the plugin makes. Everything it does not own is written back exactly as it was found — formatting, quotes, non‑ASCII text, the final newline — so a diff of the file shows only the plugin's own entries. An update may replace only commands already recognisably owned by Claude Console with their current missing-handler-safe form; it never adds wiring or touches user commands. On both platforms the keys come alive with each running session's **next activity**: the key reads **Turned on**, and no restart is needed. Whenever live status is off, the **Yes / No** keys read the same **Set up** / **Off** word the live keys do, and every session key's state bar reads **Set up** / **Status off**: the approval badge, the answer keys and the state bars all depend on this wiring, and without it nothing they could show would be current.
+**Turning this on edits your Claude Code settings, so adding the wiring happens only when you ask — installation never opts you in.** The switch is the key itself: press a live key once and it flashes *Press again*, posts a card in Options+ stating the change and, on macOS, asks on screen — **Not now** / **Turn on**. *Turn on*, or a second press of the same key within 15 seconds, merges a `statusLine` handler + five hooks into `~/.claude/settings.json`. It only **appends** hooks that aren't already there, **chains** an existing `statusLine` (yours still renders), and takes a **rolling backup** — `settings.json.claude-console.bak` is rewritten before *every* change the plugin makes. Everything it does not own is written back exactly as it was found — formatting, quotes, non‑ASCII text, the final newline — so a diff of the file shows only the plugin's own entries. An update may replace only commands already recognisably owned by Vizhi for Claude Code with their current missing-handler-safe form; it never adds wiring or touches user commands. On both platforms the keys come alive with each running session's **next activity**: the key reads **Turned on**, and no restart is needed. Whenever live status is off, the **Yes / No** keys read the same **Set up** / **Off** word the live keys do, and every session key's state bar reads **Set up** / **Status off**: the approval badge, the answer keys and the state bars all depend on this wiring, and without it nothing they could show would be current.
 
 **To take it back out:** hold a live key (a long press) and choose **Turn off** — or hold it again within 15 s — or, without the keypad, `bash ~/.claude/claude-console/scripts/uninstall.sh --unwire`. Either removes *only* the plugin's entries and leaves a marker (`~/.claude/claude-console/no-autowire`) so the keys read **Off** rather than **Set up**. Pressing a live key turns it back on.
 
@@ -176,7 +176,7 @@ All of these focus Claude's Terminal tab before sending keys.
 
 Every **Prompts** key is yours to change. The keys show one-word labels (Explore, Review, …), but each sends a **full, structured prompt** — Review, for instance, asks for a senior-engineer pass with file:line, severity, and a concrete failure scenario per finding; Deploy runs the checks but stops for your approval before anything goes public.
 
-Claude Console stores these keys in `~/.claude/claude-console/prompts.json`; Vizhi for Codex uses `~/.codex/vizhi/prompts.json`. On its first load, Vizhi copies an existing valid Claude prompt file without changing the original. Future edits are independent. If no source exists, defaults are seeded. A malformed source is left untouched, with defaults used in memory and migration retried on the next load. Edit it to suit how you work — reword any prompt, relabel or re-icon a key, delete keys you never press, or add your own macros. Each entry becomes its own bindable key, and there's no fixed count:
+Vizhi for Claude Code stores these keys in `~/.claude/claude-console/prompts.json`; Vizhi for Codex uses `~/.codex/vizhi/prompts.json`. On its first load, Vizhi copies an existing valid Claude prompt file without changing the original. Future edits are independent. If no source exists, defaults are seeded. A malformed source is left untouched, with defaults used in memory and migration retried on the next load. Edit it to suit how you work — reword any prompt, relabel or re-icon a key, delete keys you never press, or add your own macros. Each entry becomes its own bindable key, and there's no fixed count:
 
 ```json
 [
@@ -193,7 +193,7 @@ Claude Console stores these keys in `~/.claude/claude-console/prompts.json`; Viz
 - **`icon`** — an embedded icon basename. Since 2.2.0 every action icon is the same copper monochrome (colour is reserved for state), so the name only picks the glyph: `fix_bug`, `write_tests`, `explore`, `explain`, `refactor`, `review`, `optimize`, `security`, `document`, `deploy`, `commit`, `diff`, `push`, `create_pr`, `status`, `log`, `project`, `terminal`, `screenshot`, `compact` (an unknown name falls back to text).
 - **`submit`** *(optional, default `true`)* — set `false` to make a **draft key**: it types the prompt but doesn't press Return, so you can edit or finish the sentence before sending it.
 
-Reload the plugin to pick up edits (restart Logi Options+ / `killall LogiPluginService`). On either product, an empty JSON array (`[]`) removes every prompt key. Deleting the file restores the built-in defaults in Claude Console, and in Vizhi retries the one-time copy from Claude's file. **Your edits are permanent** — once you change anything in the file, no plugin update will overwrite it; only an untouched factory `prompts.json` is upgraded in place when a release improves the defaults.
+Reload the plugin to pick up edits (restart Logi Options+ / `killall LogiPluginService`). On either product, an empty JSON array (`[]`) removes every prompt key. Deleting the file restores the built-in defaults in Vizhi for Claude Code, and in Vizhi retries the one-time copy from Claude's file. **Your edits are permanent** — once you change anything in the file, no plugin update will overwrite it; only an untouched factory `prompts.json` is upgraded in place when a release improves the defaults.
 
 ## Key map
 
@@ -218,7 +218,7 @@ MX Creative Keypad → Logi Plugin Service → C# plugin (BridgeManager)
 Claude Code ← status line (bash) + voice helper (Swift + whisper.cpp)
 ```
 
-File‑based IPC under a private `/tmp/claude-console/` root (0700 dirs / 0600 files); action keys focus Claude's Terminal tab (verified by TTY) and type via `osascript`; voice records through a notarized helper app that owns its own Microphone permission, then transcribes with a bundled, self‑contained `whisper-cli` (no Homebrew at runtime). This repo builds **one package per agent** from a shared engine — Claude Console for Claude Code and **[Vizhi for Codex](src/Products/VizhiCodex/README.md)** for OpenAI's Codex CLI; both can be installed side by side. Architecture in [docs/multi-agent-architecture.md](docs/multi-agent-architecture.md); packaging in [SUBMISSION.md](SUBMISSION.md).
+File‑based IPC under a private `/tmp/claude-console/` root (0700 dirs / 0600 files); action keys focus Claude's own tab in Terminal.app or iTerm2 (verified by TTY) and type via `osascript`; voice records through a notarized helper app that owns its own Microphone permission, then transcribes with a bundled, self‑contained `whisper-cli` (no Homebrew at runtime). This repo builds **one package per agent** from a shared engine — Vizhi for Claude Code and **[Vizhi for Codex](src/Products/VizhiCodex/README.md)** for OpenAI's Codex CLI; both can be installed side by side. Architecture in [docs/multi-agent-architecture.md](docs/multi-agent-architecture.md); packaging in [SUBMISSION.md](SUBMISSION.md).
 
 ## Troubleshooting
 
@@ -233,7 +233,7 @@ The plugin's log is at `~/Library/Application Support/Logi/LogiPluginService/Log
 
 ## Uninstall
 
-In Logi Options+, **right‑click the Claude Console plugin → Uninstall** and delete the imported **Claude Console — Keypad** profile; then run the cleanup script the plugin left outside its own package:
+In Logi Options+, **right‑click the Vizhi for Claude Code plugin → Uninstall** and delete the imported **Vizhi for Claude Code — Terminal** (or **— iTerm2** / **— Windows Terminal**) profile; then run the cleanup script the plugin left outside its own package:
 
 ```bash
 bash ~/.claude/claude-console/scripts/uninstall.sh            # confirm, then remove

@@ -1,12 +1,12 @@
 # End User License Agreement
 
-_Claude Console · Vizhi for Codex — Last updated: 2026-09-09_
+_Vizhi for Claude Code (formerly Claude Console) · Vizhi for Codex — Last updated: 2026-10-15_
 
 > **Template notice:** This EULA is a starting point provided for convenience and is **not legal
 > advice**. Have it reviewed by qualified counsel before publishing to the Logitech Marketplace.
 
 This End User License Agreement ("Agreement") is between you ("you") and the developer of the
-keypad plugins built from this repository — **Claude Console** and **Vizhi for Codex** ("we",
+keypad plugins built from this repository — **Vizhi for Claude Code** and **Vizhi for Codex** ("we",
 "us"). By installing or using either plugin (the "Software"), you agree to these terms. Both are
 built from one engine and licensed on identical terms; "the Software" below means whichever you
 have installed.

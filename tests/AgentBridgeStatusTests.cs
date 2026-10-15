@@ -78,7 +78,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
             var claude = File.ReadAllText(RepoFile("src", "Products", "ClaudeConsole", "ClaudeConsolePlugin.cs"));
             var vizhi = File.ReadAllText(RepoFile("src", "Products", "VizhiCodex", "VizhiCodexPlugin.cs"));
 
-            Assert.Contains("PluginLog.Init(this.Log, \"Claude Console\")", claude);
+            Assert.Contains("PluginLog.Init(this.Log, \"Vizhi for Claude Code\")", claude);
             Assert.Contains("PluginLog.Init(this.Log, \"Vizhi for Codex\")", vizhi);
             Assert.Equal("[Vizhi for Codex] bridge ready", PluginLog.Format("Vizhi for Codex", "bridge ready"));
             Assert.Equal("[Claude Console] bridge ready", PluginLog.Format("Claude Console", "bridge ready"));

@@ -2,7 +2,7 @@
 
 _Last updated: 2026-08-21_
 
-**Applies to both keypad plugins built from this repository — Claude Console (for Claude Code) and
+**Applies to both keypad plugins built from this repository — Vizhi for Claude Code (formerly Claude Console, for Claude Code) and
 Vizhi for Codex (for OpenAI Codex CLI), on macOS and Windows.** They share one engine, and
 everything below is true of both except where a product or platform is named.
 

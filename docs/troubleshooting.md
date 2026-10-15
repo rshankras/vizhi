@@ -6,7 +6,7 @@ The plugin's own log — handy for any of these — is at
 
 ## Nothing appears on the keypad after installing
 
-That is expected: the plugin is universal (2.2.0+) — it binds to no application and ships no layout. Import [the ready-made layout](../README.md#import-the-ready-made-layout), or add Terminal as an application in Options+ and drag the Claude Console actions on. The actions are listed under **Claude Console Actions** in the Options+ action panel; if that list is missing, the plugin did not load — check the log.
+That is expected: the plugin is universal (2.2.0+) — it binds to no application and ships no layout. Import [the ready-made layout](../README.md#import-the-ready-made-layout), or add Terminal as an application in Options+ and drag the Vizhi for Claude Code actions on. The actions are listed under **Vizhi for Claude Code Actions** in the Options+ action panel; if that list is missing, the plugin did not load — check the log.
 
 ## Keys show only an exclamation mark / plain text right after building from source
 
@@ -49,5 +49,5 @@ Until 2.2.0 these failed *silently* (nothing typed, no beep, no prompt), which i
 
 ## Before 2.2.0
 
-- **The Claude Console icon vanished from Options+ after a reinstall, or never appeared after a first sideloaded install.** Those versions registered their own application entry in Options+, and the service could lose it (a reinstall dropped it from memory, a sideloaded install never created it). 2.2.0 removed the entry altogether, so there is nothing to lose; the layout lives on Terminal's own entry, which is yours. If you are on an older version, update — or restart the Logi Plugin Service (`killall LogiPluginService`) and then Options+ so it re-reads the registration from disk.
+- **The Vizhi for Claude Code icon vanished from Options+ after a reinstall, or never appeared after a first sideloaded install.** Those versions registered their own application entry in Options+, and the service could lose it (a reinstall dropped it from memory, a sideloaded install never created it). 2.2.0 removed the entry altogether, so there is nothing to lose; the layout lives on Terminal's own entry, which is yours. If you are on an older version, update — or restart the Logi Plugin Service (`killall LogiPluginService`) and then Options+ so it re-reads the registration from disk.
 - **Keys show only an exclamation mark or plain text, then the whole plugin disappears (you drop to the default profile), and a Mac restart brings it back.** A thread leak, **fixed in 1.3.1**: the live‑status poller could accumulate threads until the *Logi Plugin Service* hit the OS thread limit and crashed. Update.
