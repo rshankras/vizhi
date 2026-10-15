@@ -46,9 +46,13 @@ Codex ships the iTerm2 driver in the same cycle as 1.7.0.
 - **Logitech:** submit both packages. Ask the PM to rename the **listing** to Vizhi for Claude
   Code and say so in the mail — QA's reports all say Claude Console. Listing copy
   (`docs/marketplace-listing.md`) names Apple Terminal, iTerm2 and Windows Terminal now.
-- **vizhi.dev:** new product name on `/claude-console/` (URL and anchors stay — they are frozen and
-  the DLL links to them), the two iTerm2 layouts on the layouts page, FAQ line for "deleting a
-  terminal's last profile drops the keypad to the system profile".
+- **vizhi.dev — READY, not deployed:** branch `release/2.4.0-iterm2-and-rename` in
+  `~/Work/MyApps/vizhi-site` has the new name on every page (URLs and anchors unchanged), iTerm2 in
+  the requirements and FAQ, the six renamed layouts with fresh SHA-256s (old files kept downloadable),
+  the system-profile FAQ entry and the 2.4.0 / 1.7.0 What's new. On release day: merge it to main and
+  `firebase deploy --only hosting` from that folder (needs `firebase login`). The plugin README now
+  links to vizhi.dev/layouts/; the older rshankar.com/keypad-profiles page still lists the old files
+  — update it or point it at vizhi.dev (its repo is not checked out on this Mac).
 - Close #128 with the release link.
 - Re-import `VizhiCodex-Terminal.lp5` on the owner's Mac (its Terminal profile was deleted during
   the pass).
