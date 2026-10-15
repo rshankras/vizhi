@@ -185,6 +185,12 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
 
             var helper = File.ReadAllText(RepoFile("tools", "voice", "Info.plist"));
             Assert.Contains("com.rshankar.claudeconsole.voicehelper", helper);                // the Microphone grant
+
+            // The helper built at pack time takes its name and bundle id from this table: the name
+            // follows the product, the id never changes (it is what the Microphone grant is keyed on).
+            var table = File.ReadAllText(RepoFile("tools", "voice", "helper-metadata.py"));
+            Assert.Contains("\"ClaudeConsole\": (\"Vizhi for Claude Code\", \"com.rshankar.claudeconsole.voicehelper\")", table);
+            Assert.Contains("\"VizhiCodex\": (\"Vizhi for Codex\", \"com.rshankar.vizhicodex.voicehelper\")", table);
         }
     }
 }
