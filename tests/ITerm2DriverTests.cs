@@ -92,7 +92,9 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
                 OsascriptRunner = (args, timeout, wantOutput) =>
                 {
                     calls.Add(args);
-                    return reply?.Invoke(args) ?? "ok";
+                    // A reply function may answer null — what BoundedProcess returns for a run that
+                    // produced no output (a compile error, say) — so it is passed through as-is.
+                    return reply == null ? "ok" : reply(args);
                 },
             };
 
@@ -228,6 +230,10 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         // The frontmost probe
         // ---------------------------------------------------------------------------------------
 
+        // Probe scripts answer "" (no terminal frontmost) unless a test says otherwise; everything
+        // else — focus guards, launches — answers "ok".
+        private static String NothingInFront(List<String> args) => Script(args).Contains("frontmost") ? "" : "ok";
+
         [Fact]
         public void The_probe_asks_iTerm2_only_while_it_is_running()
         {
@@ -235,20 +241,83 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
             // dialog while compiling, and the probe runs on the poll timer. iTerm2 is asked only
             // once the scan has seen its binary — Terminal.app, part of every macOS, always is.
             var calls = new List<List<String>>();
-            var mac = Bridge(TerminalOnlyListing, calls);
+            var mac = Bridge(TerminalOnlyListing, calls, NothingInFront);
             mac.DiscoverSessions();
-            mac.QueryFrontmostSession();
-            Assert.Contains("if application \"Terminal\" is running then", Script(calls.Last()));
-            Assert.DoesNotContain("iTerm2", Script(calls.Last()));
+            Assert.Null(mac.QueryFrontmostSession());
+            var only = Script(Assert.Single(calls));
+            Assert.Contains("if application \"Terminal\" is running then", only);
+            Assert.DoesNotContain("iTerm2", only);
 
-            var both = Bridge(MixedListing, calls);
+            calls.Clear();
+            var both = Bridge(MixedListing, calls, NothingInFront);
             both.DiscoverSessions();
-            both.QueryFrontmostSession();
-            var script = Script(calls.Last());
-            Assert.Contains("if application \"Terminal\" is running then", script);
-            Assert.Contains("if application \"iTerm2\" is running then", script);
-            Assert.Contains("tty of current session of current tab of current window", script);
-            Assert.EndsWith("return \"\"", script);
+            Assert.Null(both.QueryFrontmostSession());
+            Assert.Equal(2, calls.Count);
+            Assert.Contains("if application \"Terminal\" is running then", Script(calls[0]));
+            Assert.DoesNotContain("iTerm2", Script(calls[0]));
+            Assert.Contains("if application \"iTerm2\" is running then", Script(calls[1]));
+            Assert.Contains("tty of current session of current tab of current window", Script(calls[1]));
+            Assert.DoesNotContain("\"Terminal\"", Script(calls[1]));
+            Assert.All(calls, c => Assert.EndsWith("return \"\"", Script(c)));
+        }
+
+        [Fact]
+        public void Each_terminal_is_asked_in_its_own_run_so_one_that_hangs_cannot_block_the_other()
+        {
+            // Seen on the device 2026-10-15 14:31: with one combined script, iTerm2 behind its quit
+            // sheet made the whole probe fail to compile and then overrun, and Terminal.app's tab
+            // tracking stopped with it. Now iTerm2's ask fails alone and Terminal still answers.
+            var calls = new List<List<String>>();
+            var mac = Bridge(MixedListing, calls, args =>
+                Script(args).Contains("\"iTerm2\" is running") ? null                     // iTerm2's run failed outright
+                : Script(args).Contains("frontmost") ? "Terminal|/dev/ttys000" : "ok");
+            mac.DiscoverSessions();
+            mac.FocusSession("ttys004");   // iTerm2 is the current terminal, so it is asked first
+            calls.Clear();
+
+            Assert.Equal("ttys000", mac.QueryFrontmostSession());
+
+            Assert.Equal(2, calls.Count);
+            Assert.Contains("iTerm2", Script(calls[0]));
+            Assert.Contains("\"Terminal\"", Script(calls[1]));
+            Assert.Same(MacTerminalDriver.Terminal, mac.PreferredDriver);
+        }
+
+        [Fact]
+        public void The_probe_stops_at_the_first_terminal_that_answers()
+        {
+            // The common case — the user in one terminal — stays one osascript run per probe.
+            var calls = new List<List<String>>();
+            var mac = Bridge(MixedListing, calls, args => Script(args).Contains("frontmost") ? "Terminal|/dev/ttys000" : "ok");
+            mac.DiscoverSessions();
+            calls.Clear();
+
+            Assert.Equal("ttys000", mac.QueryFrontmostSession());
+
+            var only = Script(Assert.Single(calls));
+            Assert.Contains("\"Terminal\"", only);
+            Assert.DoesNotContain("iTerm2", only);
+        }
+
+        [Fact]
+        public void The_terminal_the_user_is_in_is_asked_first()
+        {
+            var calls = new List<List<String>>();
+            var mac = Bridge(MixedListing, calls, NothingInFront);
+            mac.DiscoverSessions();
+            Assert.Equal(new[] { MacTerminalDriver.Terminal, MacTerminalDriver.ITerm2 }, mac.ProbeOrder());
+
+            mac.FocusSession("ttys004");
+            Assert.Equal(new[] { MacTerminalDriver.ITerm2, MacTerminalDriver.Terminal }, mac.ProbeOrder());
+
+            // iTerm2 current but no longer running (quit, no server rows): it is simply not asked.
+            var quit = Bridge(MixedListing, calls, NothingInFront);
+            quit.DiscoverSessions();
+            quit.FocusSession("ttys004");
+            var listing = TerminalOnlyListing;
+            quit.PsRunner = () => listing;
+            quit.DiscoverSessions();
+            Assert.Equal(new[] { MacTerminalDriver.Terminal }, quit.ProbeOrder());
         }
 
         [Fact]

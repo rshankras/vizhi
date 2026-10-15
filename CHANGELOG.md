@@ -17,7 +17,9 @@ All notable changes to Claude Console are documented here. Format based on
   `VizhiCodex-iTerm2.lp5`, bind to iTerm2's own entry in Options+ (`tools/make-iterm2-profiles.py`
   derives them from the Terminal ones). In iTerm2, Go to Project reuses an idle tab only with
   shell integration installed; without it, it always opens a new tab. Ghostty, Warp and editor
-  terminals stay off the keys: they expose nothing addressable by TTY. Both products, since the
+  terminals stay off the keys: they expose nothing addressable by TTY. The frontmost probe asks
+  each running terminal in its own run, the one you are in first, so a terminal that stops
+  answering (a quit-confirmation sheet, say) pauses only its own ask. Both products, since the
   driver sits below the agent seam.
 
 ### Fixed

@@ -3,7 +3,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
+    using System.Linq;
 
     /// <summary>
     /// The macOS backend: drives Terminal.app and iTerm2 through osascript, discovers sessions with
@@ -101,9 +101,22 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
         // Test seam for the process scan: lets the tests feed captured `ps` output.
         internal Func<String> PsRunner { get; set; }
 
-        // Skip-window for the frontmost probe after it overruns (#46). Instance state, and the poll
-        // loop is non-overlapping, so it needs no locking.
-        private readonly ProbeBackoff _frontmostBackoff = new ProbeBackoff();
+        // Skip-window for the frontmost probe after it overruns (#46) — ONE PER DRIVER, so a terminal
+        // that stops answering Apple Events (a quit-confirmation sheet, mid-quit) backs off its own
+        // ask and nobody else's. Instance state, and the poll loop is non-overlapping, so it needs
+        // no locking.
+        private readonly Dictionary<MacTerminalDriver, ProbeBackoff> _frontmostBackoff = new();
+
+        private ProbeBackoff BackoffFor(MacTerminalDriver driver)
+        {
+            if (!this._frontmostBackoff.TryGetValue(driver, out var backoff))
+            {
+                backoff = new ProbeBackoff();
+                this._frontmostBackoff[driver] = backoff;
+            }
+
+            return backoff;
+        }
 
         // ------------------------------------------------------------------------------------------
         // Discovery
@@ -227,37 +240,63 @@ namespace Loupedeck.ClaudeConsolePlugin.Platform
                 return null;
             }
 
-            // #46: an overrun means the machine is not answering Apple Events, and the next probe
-            // would ask the same stalled machine the same question — blocking the non-overlapping
-            // poll loop for another full 2000ms to do it. Skip a few opportunities instead. An EMPTY
-            // answer is not a failure and must not back off: it just means no terminal is frontmost.
-            if (this._frontmostBackoff.ShouldSkip())
+            // Each running driver is asked in its OWN osascript run, the terminal the user is using
+            // first, stopping at the first answer. One combined script was the first shape, and the
+            // device showed why not: AppleScript loads a RUNNING application's dictionary by asking
+            // the process, so while iTerm2 sat behind its quit-confirmation sheet the whole script
+            // failed to compile (2026-10-15 14:31:59, "Expected ',' but found identifier" at
+            // `session`), then overran seven times — and Terminal.app's tab tracking stopped with
+            // it, although Terminal was answering. Separate runs mean an unresponsive terminal costs
+            // only its own ask, and the common case (the user in one terminal) is still one run.
+            foreach (var driver in this.ProbeOrder())
             {
-                return null;
+                // #46: an overrun means that application is not answering Apple Events, and the next
+                // probe would ask it the same question — blocking the non-overlapping poll loop for
+                // another full 2000ms to do it. Skip a few opportunities instead. An EMPTY answer is
+                // not a failure and must not back off: it just means that terminal isn't frontmost.
+                var backoff = this.BackoffFor(driver);
+                if (backoff.ShouldSkip())
+                {
+                    continue;
+                }
+
+                var raw = this.RunOsascriptCapture(new List<String> { "-e", driver.FrontmostQuery + "return \"\"" }, out var timedOut);
+                if (timedOut)
+                {
+                    backoff.RecordTimeout();
+                    continue;
+                }
+
+                backoff.RecordSuccess();
+                var tty = this.ParseFrontmostReply(raw);
+                if (tty != null)
+                {
+                    return tty;
+                }
             }
 
-            var raw = this.RunOsascriptCapture(new List<String> { "-e", this.FrontmostProbeScript() }, out var timedOut);
-            if (timedOut)
-            {
-                this._frontmostBackoff.RecordTimeout();
-                return null;
-            }
-
-            this._frontmostBackoff.RecordSuccess();
-            return this.ParseFrontmostReply(raw);
+            return null;
         }
 
-        /// <summary>One script, one osascript run: each RUNNING driver's query in turn, then "".</summary>
-        internal String FrontmostProbeScript()
+        /// <summary>The running drivers in the order the probe asks them: the user's current terminal first.</summary>
+        internal IReadOnlyList<MacTerminalDriver> ProbeOrder()
         {
-            var script = new StringBuilder();
-            foreach (var driver in this._runningDrivers)
+            var order = new List<MacTerminalDriver>();
+            var current = this.PreferredDriver;
+            if (this._runningDrivers.Contains(current))
             {
-                script.Append(driver.FrontmostQuery);
+                order.Add(current);
             }
 
-            script.Append("return \"\"");
-            return script.ToString();
+            foreach (var driver in this._runningDrivers)
+            {
+                if (!order.Contains(driver))
+                {
+                    order.Add(driver);
+                }
+            }
+
+            return order;
         }
 
         // "Terminal|/dev/ttys003" → "ttys003", remembering Terminal.app as the current terminal.
