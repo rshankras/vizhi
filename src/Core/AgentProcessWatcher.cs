@@ -110,6 +110,20 @@ namespace Loupedeck.ClaudeConsolePlugin
         {
             public HashSet<String> Ttys = new HashSet<String>(StringComparer.Ordinal);
             public List<SkippedSession> Skipped = new List<SkippedSession>();
+
+            /// <summary>
+            /// The owning application's command line for each session in <see cref="Ttys"/>, so a
+            /// bridge with more than one terminal driver knows which one reaches each tab (#128).
+            /// Empty when no filter was given: nothing then needs an owner.
+            /// </summary>
+            public Dictionary<String, String> Owners = new Dictionary<String, String>(StringComparer.Ordinal);
+
+            /// <summary>
+            /// Every application binary in the listing (`….app/Contents/MacOS/…`), whether or not it
+            /// owns a session — so a bridge can tell which terminal applications are RUNNING from
+            /// the scan it already has, without a second one.
+            /// </summary>
+            public HashSet<String> AppBinaries = new HashSet<String>(StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -135,6 +149,10 @@ namespace Loupedeck.ClaudeConsolePlugin
                 if (m.Success)
                 {
                     table[m.Groups[1].Value] = (m.Groups[2].Value, m.Groups[4].Value);
+                    if (IsAppBinary(m.Groups[4].Value))
+                    {
+                        result.AppBinaries.Add(m.Groups[4].Value);
+                    }
                 }
             }
 
@@ -144,6 +162,7 @@ namespace Loupedeck.ClaudeConsolePlugin
                 if (owner != null && drivableOwner(owner))
                 {
                     result.Ttys.Add(candidate.Tty);
+                    result.Owners[candidate.Tty] = owner;
                 }
                 else
                 {
@@ -173,9 +192,18 @@ namespace Loupedeck.ClaudeConsolePlugin
             return null;
         }
 
-        /// <summary>"/Applications/iTerm.app/Contents/MacOS/iTerm2 …" → true. A shell, login, tmux or ssh → false.</summary>
+        /// <summary>
+        /// "/Applications/iTerm.app/Contents/MacOS/iTerm2 …" → true. A shell, tmux or ssh → false.
+        /// A `login` row counts when it names a bundle binary (iTerm2 starts shells through
+        /// `login -fpl user …/iTerm.app/Contents/MacOS/ShellLauncher`). So does iTerm2's session
+        /// server, `…/Application Support/iTerm2/iTermServer-&lt;ver&gt;`: it lives OUTSIDE the bundle,
+        /// every iTerm2 session hangs off it, and once iTerm2 has been quit and relaunched it is the
+        /// only iTerm2 process left above a restored session (#128).
+        /// </summary>
         internal static Boolean IsAppBinary(String command) =>
-            command != null && command.Contains(".app/Contents/MacOS/", StringComparison.Ordinal);
+            command != null
+            && (command.Contains(".app/Contents/MacOS/", StringComparison.Ordinal)
+                || command.Contains("/iTermServer-", StringComparison.Ordinal));
 
         /// <summary>"/Applications/Visual Studio Code.app/Contents/MacOS/Electron" → "Visual Studio Code".</summary>
         internal static String AppName(String command)
@@ -183,7 +211,7 @@ namespace Loupedeck.ClaudeConsolePlugin
             var end = command.IndexOf(".app/", StringComparison.Ordinal);
             if (end < 0)
             {
-                return command;
+                return command.Contains("/iTermServer-", StringComparison.Ordinal) ? "iTerm2" : command;
             }
 
             var start = command.LastIndexOf('/', end);

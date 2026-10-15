@@ -62,6 +62,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         [Theory]
         [InlineData("ClaudeConsole-Keypad.lp5")]
         [InlineData("ClaudeConsole-Windows.lp5")]
+        [InlineData("ClaudeConsole-iTerm2.lp5")]   // #128: derived from the Terminal one by tools/make-iterm2-profiles.py
         public void Fallback_profiles_use_the_approved_five_page_layout(String file)
         {
             var path = RepoFile("profiles", file);
@@ -84,6 +85,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         [Theory]
         [InlineData("VizhiCodex-Keypad.lp5", "com.apple.terminal", "com.apple.Terminal", "DefaultMac")]
         [InlineData("VizhiCodex-Windows.lp5", "windowsterminal", "WindowsTerminal", "DefaultWin")]
+        [InlineData("VizhiCodex-iTerm2.lp5", "com.googlecode.iterm2", "com.googlecode.iterm2", "DefaultMac")]   // #128
         public void Vizhi_profiles_match_the_host_and_never_bind_unsupported_or_Claude_actions(
             String file, String applicationName, String processName, String defaultPlugin)
         {

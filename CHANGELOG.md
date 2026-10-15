@@ -587,6 +587,23 @@ All notable changes to Claude Console are documented here. Format based on
 
 ## [Unreleased]
 
+### Added
+- **iTerm2 (#128).** Sessions running in iTerm2 now take Session keys, and every key reaches
+  them the way it reaches a Terminal.app tab: by the session's TTY, focused first, typed into
+  only if found. The macOS backend grew a terminal-driver seam — Terminal.app and iTerm2 each
+  own their focus-by-TTY script, frontmost query, tab and window navigation and launch scripts
+  — and discovery records which app owns each session, so a mixed setup routes every press to
+  the right one. New Tab, New Claude, New Claude (Window) and Go to Project open in the
+  terminal you are using: the one in front, or the one your keys last touched, else
+  Terminal.app. Ready-made iTerm2 layouts, `ClaudeConsole-iTerm2.lp5` and
+  `VizhiCodex-iTerm2.lp5`, bind to iTerm2's own entry in Options+ (`tools/make-iterm2-profiles.py`
+  derives them from the Terminal ones). In iTerm2, Go to Project reuses an idle tab only with
+  shell integration installed; without it, it always opens a new tab. Ghostty, Warp and editor
+  terminals stay off the keys: they expose nothing addressable by TTY. The frontmost probe asks
+  each running terminal in its own run, the one you are in first, so a terminal that stops
+  answering (a quit-confirmation sheet, say) pauses only its own ask. Both products, since the
+  driver sits below the agent seam.
+
 ### Fixed
 - **Windows: a helper dated in the future no longer withholds Yes/No and live values after
   install (#125).** The installer keeps the package's ZIP timestamp, and ZIP times carry no
