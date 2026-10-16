@@ -9,7 +9,8 @@
 - **Voice failures are visible on the key.** Dictate, Voice Draft and Go to Project drew their
   failure words through the icon renderer, which draws the icon alone — so "No sound", "No helper",
   "Mic denied" showed the ordinary idle key and only the beep hinted anything went wrong. A failure
-  now turns the whole key red with the words on it for 2.5 s.
+  now turns the whole key red with the words on it, for 8 s (was 2.5 s, too short to
+  notice) — the same hold Vizhi for Codex and Vizhi for ChatGPT use.
 
 ## Vizhi for ChatGPT [1.1.3] — 2026-10-06 — Vizhi Desktop is now Vizhi for ChatGPT
 
