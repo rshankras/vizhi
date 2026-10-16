@@ -112,7 +112,8 @@ namespace Loupedeck.ClaudeConsolePlugin.Actions
             var word = setupWord == null && _bridge.SelectingSlot == slot
                 ? "Selecting"
                 : StateWord(session, setupWord, _bridge.Agent.Id);
-            return KeyImage.RenderSessionSlot(imageSize, name, word, barColor, darkText: false);
+            var pinned = active && session.SessionKey == _bridge.PinnedTty;
+            return KeyImage.RenderSessionSlot(imageSize, name, word, barColor, darkText: false, pinned);
         }
 
         // Colour communicates routing; this word communicates session state. Keeping those two

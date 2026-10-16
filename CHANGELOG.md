@@ -588,6 +588,9 @@ All notable changes to Claude Console are documented here. Format based on
 ## [Unreleased]
 
 ### Added
+- **A pinned session key wears an orange frame.** Pressing a session key pins every other key to
+  that session until you press it again; following the frontmost tab looked identical, so a pin
+  was easy to forget. The pinned key now draws a frame in its bar colour.
 - **iTerm2 (#128).** Sessions running in iTerm2 now take Session keys, and every key reaches
   them the way it reaches a Terminal.app tab: by the session's TTY, focused first, typed into
   only if found. The macOS backend grew a terminal-driver seam — Terminal.app and iTerm2 each
