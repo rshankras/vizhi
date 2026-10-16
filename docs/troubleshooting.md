@@ -35,9 +35,15 @@ Open Windows Terminal and start the agent there. For a classic Command Prompt or
 
 With a Windows Terminal window open, a nav press from a classic console acts on *that* WT window — by design, not silently.
 
+## A session in IntelliJ, VS Code or a devcontainer gets no key
+
+Only Terminal.app and iTerm2 sessions are shown on macOS; the log names each one skipped (`session on ttysNNN is not shown — it runs in IntelliJ IDEA…`). The keys type only after focusing the exact tab that owns a session's TTY, and editor-embedded terminals expose no such tab, so a key for one could only guess where to type. Run `claude` in iTerm2 or Terminal in the project folder, then `/ide` to pair it with your editor.
+
+A session inside a container is invisible to the plugin altogether: its process lives in the container runtime's VM, not in the Mac's process list, and its hooks write to the container's `/tmp`. Run `claude` on the Mac in the mounted project folder.
+
 ## Yes / No beep and do nothing
 
-They only act on a permission prompt the plugin can see (a `PermissionRequest` hook payload). Two causes: live status is not turned on (press a live key — see [The live status bridge](../README.md#the-live-status-bridge)), or the session is waiting on something that is not a permission menu (a plain-text question, an idle prompt) — type into the session for those. This refusal is deliberate: guessing at a menu the plugin cannot see is how 2.0.1 approved the very thing the user pressed **No** on.
+They only act on a permission prompt the plugin can see (a `PermissionRequest` hook payload). Three causes: live status is not turned on (press **Cost**, **Context** or **Activity** — Yes/No themselves don't switch it; see [The live status bridge](../README.md#the-live-status-bridge)); the keys are aimed at a **different session** from the one with the prompt (the highlighted session bar is the target — with nothing pinned it is the tab in front, so switch to the waiting tab or press its session key); or the session is waiting on something that is not a permission menu (a plain-text question, an idle prompt) — type into the session for those. This refusal is deliberate: guessing at a menu the plugin cannot see is how 2.0.1 approved the very thing the user pressed **No** on.
 
 ## Voice: the key says "Mic denied", "No speech" or "Model loading"
 
