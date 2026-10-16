@@ -623,6 +623,10 @@ All notable changes to Claude Console are documented here. Format based on
   replaces the profile you had.
 
 ### Fixed
+- **The orange session bar follows the tab in front.** With no session pinned, the keys already
+  aimed at the frontmost iTerm2 or Terminal.app tab, but the session keys repainted only when a
+  session changed, so the orange bar stayed on the tab you had left while Yes / No answered the
+  one you were looking at. The session keys now repaint when the target changes.
 - **Windows: a helper dated in the future no longer withholds Yes/No and live values after
   install (#125).** The installer keeps the package's ZIP timestamp, and ZIP times carry no
   zone, so a helper packed at 11:34 IST reads 11:34 *local* on any machine — hours ahead of the
