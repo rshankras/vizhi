@@ -156,7 +156,7 @@ namespace Loupedeck.ClaudeConsolePlugin
         /// </summary>
         public static BitmapImage RenderSessionSlot(
             PluginImageSize imageSize, String name, String stateWord,
-            BitmapColor barColor, Boolean darkText)
+            BitmapColor barColor, Boolean darkText, Boolean pinned = false)
         {
             // Width90 normally gives a plugin an inset 80x80 image inside the physical 90x90 key;
             // Options+ reserves the remaining strip for its command label. Session keys draw their
@@ -200,6 +200,16 @@ namespace Loupedeck.ClaudeConsolePlugin
                     stateWord, 0, barY, w, barH,
                     darkText ? Dark : White,
                     fontSize: (Int32)(14 * scale));
+
+                // A pin holds the keys on this session whatever tab is in front; the frame says so,
+                // where the bar alone looks the same as following the frontmost tab.
+                if (pinned)
+                {
+                    var t = Math.Max(4, (Int32)(6 * scale));
+                    bitmap.FillRectangle(0, 0, w, t, barColor);
+                    bitmap.FillRectangle(0, 0, t, h, barColor);
+                    bitmap.FillRectangle(w - t, 0, t, h, barColor);
+                }
 
                 return bitmap.ToImage();
             }
@@ -507,31 +517,6 @@ namespace Loupedeck.ClaudeConsolePlugin
             }
 
             return new[] { a, b };
-        }
-
-        private static void DrawSelectionCorners(BitmapBuilder bitmap, Boolean badgePresent)
-        {
-            var scale = Math.Min(bitmap.Width, bitmap.Height) / 96f;
-            var inset = (Int32)(4 * scale);
-            var arm = (Int32)(18 * scale);
-            var thickness = Math.Max(2, (Int32)(3 * scale));
-
-            // top-left
-            bitmap.FillRectangle(inset, inset, arm, thickness, Selection);
-            bitmap.FillRectangle(inset, inset, thickness, arm, Selection);
-
-            // The badge owns the top-right corner while an approval is pending — pinned-and-
-            // waiting is the single most important state this key has, and dot-over-bracket
-            // turned it to mush (a shortened bracket stub reads as a rendering glitch, so the
-            // whole bracket yields; the left one alone still marks the pin).
-            if (badgePresent)
-            {
-                return;
-            }
-
-            // top-right
-            bitmap.FillRectangle(bitmap.Width - inset - arm, inset, arm, thickness, Selection);
-            bitmap.FillRectangle(bitmap.Width - inset - thickness, inset, thickness, arm, Selection);
         }
     }
 }
