@@ -205,7 +205,7 @@ namespace Loupedeck.ClaudeConsolePlugin
                 // where the bar alone looks the same as following the frontmost tab.
                 if (pinned)
                 {
-                    var t = Math.Max(2, (Int32)(3 * scale));
+                    var t = Math.Max(4, (Int32)(6 * scale));
                     bitmap.FillRectangle(0, 0, w, t, barColor);
                     bitmap.FillRectangle(0, 0, t, h, barColor);
                     bitmap.FillRectangle(w - t, 0, t, h, barColor);
