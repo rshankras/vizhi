@@ -175,6 +175,21 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         }
 
         /// <summary>
+        /// A dead input records digital silence, and whisper turns that into "you". The helper's
+        /// silence verdict must stop every voice key from typing it, not only Find Chat.
+        /// </summary>
+        [Fact]
+        public void A_silent_recording_is_refused_for_every_voice_key()
+        {
+            var swift = File.ReadAllText(RepoFile("tools", "voice", "ClaudeVoiceHelper.swift"));
+            Assert.Contains("transcriptPath + \".signal\"", swift);
+
+            var bridge = File.ReadAllText(RepoFile("src", "Core", "BridgeManager.cs"));
+            Assert.Contains("if (ReadSidecar(VoiceTranscriptFile + \".signal\") == \"silent\")", bridge);
+            Assert.Equal("No sound", VoiceFailure.NoSound);
+        }
+
+        /// <summary>
         /// The two lines that made a crash indistinguishable from a quiet room: stderr thrown away,
         /// and exit(0) without ever reading terminationStatus.
         /// </summary>

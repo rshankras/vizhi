@@ -39,9 +39,10 @@ With a Windows Terminal window open, a nav press from a classic console acts on 
 
 They only act on a permission prompt the plugin can see (a `PermissionRequest` hook payload). Two causes: live status is not turned on (press a live key — see [The live status bridge](../README.md#the-live-status-bridge)), or the session is waiting on something that is not a permission menu (a plain-text question, an idle prompt) — type into the session for those. This refusal is deliberate: guessing at a menu the plugin cannot see is how 2.0.1 approved the very thing the user pressed **No** on.
 
-## Voice: the key says "Mic denied", "No speech" or "Model loading"
+## Voice: the key says "Mic denied", "No sound", "No speech" or "Model loading"
 
 - **Mic denied** — the helper was refused the microphone. Allow **ClaudeVoiceHelper** in System Settings → Privacy & Security → Microphone, or reset and re-grant on the next press: `tccutil reset Microphone com.rshankar.claudeconsole.voicehelper`. A rebuilt or re-signed helper resets the grant (macOS ties it to the code signature); a stable Developer‑ID signature via `tools/voice/sign-and-notarize.sh` avoids this.
+- **No sound** — the recording was silence: the input device heard nothing. A MacBook's built-in mic is off while the lid is closed, so with the lid shut pick an external mic in System Settings → Sound → Input. (Before this check, a silent recording was typed as "you".)
 - **No speech** — it recorded but heard nothing usable.
 - **Model loading** — the speech model is still downloading; try again shortly.
 

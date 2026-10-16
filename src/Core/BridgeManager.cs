@@ -3009,6 +3009,15 @@ namespace Loupedeck.ClaudeConsolePlugin
                     TryDelete(VoiceTranscriptFile);
                     TryDelete(VoiceIntentFile);
 
+                    // The helper measured the recording before deleting it. Digital silence — a dead
+                    // input, such as a closed MacBook's built-in mic — still transcribes, usually as
+                    // "you", which would be typed into the session as if it had been said.
+                    if (ReadSidecar(VoiceTranscriptFile + ".signal") == "silent")
+                    {
+                        this.ReportVoiceFailure(intent, VoiceFailure.NoSound, "recording was silent — check the input device");
+                        return;
+                    }
+
                     // Whisper labels sounds it could not read as speech: "(gunshot)", "(static)",
                     // "[BLANK_AUDIO]". They are descriptions of noise, not words anyone said, and
                     // acting on one is acting on a failed dictation. Untreated, "(gunshot)" fuzzy-
@@ -3023,7 +3032,7 @@ namespace Loupedeck.ClaudeConsolePlugin
                                 File.Exists(VoiceWavFile), () => this.SearchAudioHasSignal(VoiceWavFile));
                             if (verdict == false)
                             {
-                                this.ReportVoiceFailure(intent, VoiceFailure.NoSpeech, "search recording was silent");
+                                this.ReportVoiceFailure(intent, VoiceFailure.NoSound, "search recording was silent");
                                 return;
                             }
                         }
