@@ -140,6 +140,22 @@ namespace Loupedeck.ClaudeConsolePlugin
         }
 
         /// <summary>
+        /// A voice key's failure face: the whole key red, the words in white. <see cref="Render"/>
+        /// draws an icon key as the icon alone, so a red "No sound" passed to it looked exactly
+        /// like the idle key and the failure was never seen.
+        /// </summary>
+        public static BitmapImage RenderFailure(PluginImageSize imageSize, String label)
+        {
+            using (var bitmap = new BitmapBuilder(imageSize))
+            {
+                bitmap.Clear(Red);
+                var scale = Math.Min(bitmap.Width, bitmap.Height) / 96f;
+                bitmap.DrawText(label ?? "", 0, 0, bitmap.Width, bitmap.Height, White, fontSize: (Int32)(16 * scale));
+                return bitmap.ToImage();
+            }
+        }
+
+        /// <summary>
         /// The session face is split in two: the TITLE region is the top 75% of the key, and the
         /// bottom 25% is the state bar.
         /// </summary>

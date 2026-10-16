@@ -190,6 +190,21 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
         }
 
         /// <summary>
+        /// KeyImage.Render draws an icon key as the icon alone — no label, no colour — so a failure
+        /// rendered through it was the idle key: "No sound", "No helper" were never seen on device.
+        /// </summary>
+        [Theory]
+        [InlineData("VoiceCommand")]
+        [InlineData("VoiceDraftCommand")]
+        [InlineData("ProjectVoiceCommand")]
+        public void A_voice_keys_failure_face_is_drawn_with_its_words(String action)
+        {
+            var source = File.ReadAllText(RepoFile("src", "Core", "Actions", action + ".cs"));
+            Assert.Contains("KeyImage.RenderFailure(imageSize, _fail.Text)", source);
+            Assert.DoesNotContain("KeyImage.Render(imageSize, _fail.Text", source);
+        }
+
+        /// <summary>
         /// The two lines that made a crash indistinguishable from a quiet room: stderr thrown away,
         /// and exit(0) without ever reading terminationStatus.
         /// </summary>
