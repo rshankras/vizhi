@@ -69,7 +69,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Actions
                 : _face.IsActive
                 ? KeyImage.Render(imageSize, "Listening", KeyImage.Green, _face.Icon)
                 : _fail.IsActive
-                    ? KeyImage.Render(imageSize, _fail.Text, KeyImage.Red, "voice_draft")
+                    ? KeyImage.RenderFailure(imageSize, _fail.Text)
                     : KeyImage.Render(imageSize, "Draft", KeyImage.Purple, "voice_draft");
     }
 }
