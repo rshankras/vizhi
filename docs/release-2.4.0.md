@@ -26,12 +26,35 @@ Codex ships the iTerm2 driver in the same cycle as 1.7.0.
       2026-10-29 after the first pack. The CHANGELOG now dates 2.4.0 / 1.7.0 as 2026-10-29 and includes
       them. #167 (silent recordings, failure faces; #169) and #170 are 2.4.1.
 
+## Device pass on the repacked builds (owner's Mac, 2026-10-29)
+
+Packages from main `bf2edb9` (#171), installed through Options+ at 07:35 (Claude Console, upgrade)
+and 07:39 (Vizhi for Codex, fresh install — a fresh install needs the owner's click in the Options+
+prompt; an upgrade installs on `open`):
+
+- **Vizhi for Claude Code 2.4.0** — `ClaudeConsole_2.4.0.lplug4`
+  `5de73cb7b92b6afb787fab67dff8135124f9bb227ba67c0276d3f3e2c7fffc32`: installed DLL matches the
+  package; Dictate, Yes and No into a Terminal session; live status survived the upgrade.
+- **Vizhi for Codex 1.7.0** — `VizhiCodex_1.7.0.lplug4`
+  `f3149199928c83c96c043c8ef2607e143b0ad678b8eddefd8f852e4ecb8ce781`: Codex sessions in iTerm2
+  (AlertWala, ChantFlow) discovered and keyed; hooks trusted, two approvals answered by key; with
+  the pin released the blue bar followed a tab switch on its own, and the pinned key showed its
+  frame (#165 on the shipped build).
+- Layout import of the renamed files; Options+ keeps every import as its own profile (#172), and
+  each terminal entry shows one layout at a time — picked per app in Options+ (FAQ line on the
+  site branch).
+- Draft GitHub releases `v2.4.0` and `vizhi-codex/v1.7.0` exist with the packages, the six layouts
+  and checksums; tags are created on publish.
+
+Not run: Windows smoke on the laptop (recommended before the Marketplace submission); the
+clean-machine Mac pass.
+
 ## Cut
 
 1. Merge #162 into main, retarget the rename PR to main, merge it.
 2. Versions bumped (Claude Console `2.4.0`, Vizhi for Codex `1.7.0`) and the CHANGELOG cut:
    `## [2.4.0] — 2026-10-29` and `## Vizhi for Codex [1.7.0] — 2026-10-29` (release/2.4.0-cut).
-3. **Remove the dev link first**: `Plugins/ClaudeConsolePlugin.link` is live on the packing Mac;
+3. ~~Remove the dev link first~~ (done 2026-10-15; no link since): `Plugins/ClaudeConsolePlugin.link` is live on the packing Mac;
    the service refuses a package while a link exists ("already loaded"). `pack-release.sh` deletes
    it whichever product it packs — and the #73 liveness check then unwires live status (seen
    2026-10-14); turn it back on with a live key afterwards.
