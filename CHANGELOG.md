@@ -585,7 +585,7 @@ The 0.17.x entries below are the preview builds that led to this release.
 All notable changes to Claude Console are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/); this project uses [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [2.4.0] — 2026-10-29
 
 ### Added
 - **A pinned session key wears an orange frame.** Pressing a session key pins every other key to
@@ -657,6 +657,30 @@ All notable changes to Claude Console are documented here. Format based on
   with a log line saying why. The profile root and the plugin service's own folder never
   qualify. On macOS a plain New Tab stays Cmd+T, following Terminal's own "new tabs open in"
   preference; the two session-starting keys carry a `cd` into the same command.
+
+## Vizhi for Codex [1.7.0] — 2026-10-29
+
+### Added
+- **iTerm2 (#128).** Codex sessions running in iTerm2 take Session keys, and every key reaches
+  them the way it reaches a Terminal.app tab: by the session's TTY, focused first, typed into only
+  if found. Sessions in Terminal.app and iTerm2 can run side by side; each press goes to the
+  application that owns the session. New Tab, New Codex and Go to Project open in the terminal you
+  are using. The ready-made iTerm2 layout is `VizhiCodex-iTerm2.lp5`. Same engine change as
+  Vizhi for Claude Code 2.4.0.
+- **A pinned session key wears a frame** in its bar colour, so a pin and a followed tab never look
+  the same.
+
+### Changed
+- **The layout downloads are named after the terminal they bind to:** `VizhiCodex-Keypad.lp5` →
+  `VizhiCodex-Terminal.lp5`, `VizhiCodex-Windows.lp5` → `VizhiCodex-WindowsTerminal.lp5`, plus the
+  new `VizhiCodex-iTerm2.lp5`. In Options+ they read "Vizhi for Codex — Terminal", "— iTerm2",
+  "— Windows Terminal". Same GUIDs, so importing a new file replaces the profile you had.
+- The package description names Apple Terminal, iTerm2 and Windows Terminal.
+
+### Fixed
+- **The orange session bar follows the tab in front.** With no session pinned, the keys already
+  aimed at the frontmost tab, but the session keys repainted only when a session changed, so the
+  bar stayed on the tab you had left. They now repaint when the target changes.
 
 ## [2.3.2] — 2026-09-28
 

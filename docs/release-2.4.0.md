@@ -19,15 +19,18 @@ Codex ships the iTerm2 driver in the same cycle as 1.7.0.
 - [x] Full suite green on both branches (`bash tests/run-all.sh`), both products compile.
 - [x] iTerm2 device pass on the owner's Mac for both products (PR #162 lists the items). Skipped
       by choice: quit-and-restore, press-while-quit, the window keys (not on any shipped layout).
-- [ ] Rename seen live: dev build loaded, log tag reads `[Vizhi for Claude Code]`, Options+ shows
-      the new plugin name and the re-imported layout reads "Vizhi for Claude Code — Terminal".
+- [x] Rename seen live: the 2.4.0 package installed on the owner's Mac 2026-10-28, log tag `[Vizhi for Claude
+      Code]`, voice helper installed from the package with the new name; dictation and session keys used
+      2026-10-29 (the #165 / #167 reproductions ran on it).
+- [x] **Repack needed:** #165 (session bar follows the tab, pin frame) and #166 (docs) merged on
+      2026-10-29 after the first pack. The CHANGELOG now dates 2.4.0 / 1.7.0 as 2026-10-29 and includes
+      them. #167 (silent recordings, failure faces; #169) and #170 are 2.4.1.
 
 ## Cut
 
 1. Merge #162 into main, retarget the rename PR to main, merge it.
-2. Versions are already bumped in the rename PR: Claude Console `2.4.0`, Vizhi for Codex `1.7.0`
-   (csproj + yaml each, `ProductVersionTests`). Turn `## [Unreleased]` into `## [2.4.0] — <date>`
-   and add a `## Vizhi for Codex [1.7.0] — <date>` entry for the iTerm2 driver.
+2. Versions bumped (Claude Console `2.4.0`, Vizhi for Codex `1.7.0`) and the CHANGELOG cut:
+   `## [2.4.0] — 2026-10-29` and `## Vizhi for Codex [1.7.0] — 2026-10-29` (release/2.4.0-cut).
 3. **Remove the dev link first**: `Plugins/ClaudeConsolePlugin.link` is live on the packing Mac;
    the service refuses a package while a link exists ("already loaded"). `pack-release.sh` deletes
    it whichever product it packs — and the #73 liveness check then unwires live status (seen
