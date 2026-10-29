@@ -66,7 +66,7 @@ Known and already fixed for 2.4.1: a silent microphone input is transcribed as "
 
 ### Before you click submit
 
-- [ ] Windows smoke on the laptop: install, a session key, Yes, Dictate (the payload is rebuilt and re-signed).
+- [x] Windows smoke on the laptop done 2026-10-29 (owner): install, a session key, Yes, Dictate.
 - [x] macOS device pass on the packaged build (docs/release-2.4.0.md).
 - [x] GitHub release v2.4.0 published; vizhi.dev deployed with the new name, iTerm2 and the renamed layouts.
 - [x] Package verifier passed; notarization accepted; 16 of 16 Windows files signed.

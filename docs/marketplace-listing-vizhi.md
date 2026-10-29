@@ -65,7 +65,7 @@ Known and already fixed for the next update: a silent microphone input is transc
 
 ### Before you click submit
 
-- [ ] Windows smoke on the laptop: install over 1.6.2, trust the hooks when Codex asks, a session key, Yes, Dictate.
+- [x] Windows smoke on the laptop done 2026-10-29 (owner): install over 1.6.2, hooks trusted, a session key, Yes, Dictate.
 - [x] macOS device pass on the packaged build (docs/release-2.4.0.md): iTerm2 and Terminal sessions, two approvals by key.
 - [x] GitHub release vizhi-codex/v1.7.0 published; vizhi.dev deployed.
 - [x] Package verifier passed; notarization accepted; 16 of 16 Windows files signed.

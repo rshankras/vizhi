@@ -46,8 +46,7 @@ prompt; an upgrade installs on `open`):
 - Draft GitHub releases `v2.4.0` and `vizhi-codex/v1.7.0` exist with the packages, the six layouts
   and checksums; tags are created on publish.
 
-Not run: Windows smoke on the laptop (recommended before the Marketplace submission); the
-clean-machine Mac pass.
+Windows smoke on the laptop done 2026-10-29 (owner), both packages. Not run: the clean-machine Mac pass.
 
 ## Cut
 
