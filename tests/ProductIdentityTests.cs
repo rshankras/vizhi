@@ -21,7 +21,9 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
     ///   • the runtime home under ~/.claude/claude-console/, which users' settings.json hooks point
     ///     at, the hook/helper executable names, and the settings backup suffix;
     ///   • the voice helper's bundle id, which holds the Microphone grant;
-    ///   • each layout's GUID, which is what lets a re-import replace rather than duplicate.
+    ///   • each layout's GUID, the package identity the generators and the download pages key on.
+    ///     (Options+ still gives every manual import its own copy — seen 2026-10-29 — so a re-import
+    ///     adds a profile; the old one is deleted by hand.)
     /// </summary>
     public class ProductIdentityTests
     {

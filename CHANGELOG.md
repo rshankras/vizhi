@@ -614,7 +614,7 @@ All notable changes to Claude Console are documented here. Format based on
   Windows file descriptions use the new name. Nothing else changes: the internal name stays
   `ClaudeConsole`, so an update keeps your layouts, key bindings, live-status wiring, microphone
   permission and settings. A layout imported earlier keeps its old name until you import the new
-  file, which replaces it rather than duplicating it (same GUID). The voice helper and its
+  file; Options+ adds it as a second profile, so delete the old one afterwards. The voice helper and its
   microphone prompt carry the new name too (built per product at pack time, #140). The runtime folder is still
   `~/.claude/claude-console/`, and the repository is now `rshankras/vizhi`.
 - **The layout downloads are named after the product and the terminal they bind to.**
@@ -622,8 +622,8 @@ All notable changes to Claude Console are documented here. Format based on
   `VizhiClaudeCode-iTerm2.lp5`, `ClaudeConsole-Windows.lp5` → `VizhiClaudeCode-WindowsTerminal.lp5`,
   and `VizhiCodex-Keypad` / `-Windows` → `VizhiCodex-Terminal` / `-WindowsTerminal`. In Options+
   the profiles read "Vizhi for Claude Code — Terminal", "— iTerm2", "— Windows Terminal" (and
-  the same for Vizhi for Codex) instead of "— Keypad". Same GUIDs, so importing a new file
-  replaces the profile you had.
+  the same for Vizhi for Codex) instead of "— Keypad". The keys are the same, so no re-import is
+  needed; if you import a new file for the name, delete the old profile afterwards (Options+ keeps both).
 
 ### Fixed
 - **The orange session bar follows the tab in front.** With no session pinned, the keys already
@@ -674,7 +674,8 @@ All notable changes to Claude Console are documented here. Format based on
 - **The layout downloads are named after the terminal they bind to:** `VizhiCodex-Keypad.lp5` →
   `VizhiCodex-Terminal.lp5`, `VizhiCodex-Windows.lp5` → `VizhiCodex-WindowsTerminal.lp5`, plus the
   new `VizhiCodex-iTerm2.lp5`. In Options+ they read "Vizhi for Codex — Terminal", "— iTerm2",
-  "— Windows Terminal". Same GUIDs, so importing a new file replaces the profile you had.
+  "— Windows Terminal". The keys are the same, so no re-import is needed; if you import a new file
+  for the name, delete the old profile afterwards (Options+ keeps both).
 - The package description names Apple Terminal, iTerm2 and Windows Terminal.
 
 ### Fixed
