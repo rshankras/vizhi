@@ -47,6 +47,7 @@ namespace Loupedeck.ClaudeConsolePlugin.Actions
 
             _bridge.Grid.OnGridChanged += this.OnGridChanged;
             _bridge.OnLiveStatusChanged += _ => this.OnGridChanged();   // the setup word comes and goes with the wiring (#58)
+            _bridge.OnTargetChanged += this.OnGridChanged;   // the orange bar follows a frontmost-tab change, not only a press
             _bridge.OnAgentBridgeStatusChanged += _ => this.OnGridChanged();
             _bridge.OnHelperHealthChanged += this.OnGridChanged;
         }
@@ -111,7 +112,8 @@ namespace Loupedeck.ClaudeConsolePlugin.Actions
             var word = setupWord == null && _bridge.SelectingSlot == slot
                 ? "Selecting"
                 : StateWord(session, setupWord, _bridge.Agent.Id);
-            return KeyImage.RenderSessionSlot(imageSize, name, word, barColor, darkText: false);
+            var pinned = active && session.SessionKey == _bridge.PinnedTty;
+            return KeyImage.RenderSessionSlot(imageSize, name, word, barColor, darkText: false, pinned);
         }
 
         // Colour communicates routing; this word communicates session state. Keeping those two

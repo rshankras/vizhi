@@ -146,6 +146,16 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
             Assert.Contains("OnLiveStatusChanged +=", slot);
         }
 
+        [Fact]
+        public void The_session_faces_repaint_when_the_target_changes()
+        {
+            // Unpinned, the target follows the frontmost tab without any session changing; a face
+            // that only repainted on grid changes kept the orange bar on the tab you had left.
+            var slot = File.ReadAllText(Path.Combine(RepoRoot(), "src", "Core", "Actions", "SessionSlotCommand.cs"));
+
+            Assert.Contains("OnTargetChanged +=", slot);
+        }
+
         private static String RepoRoot()
         {
             var dir = AppContext.BaseDirectory;
