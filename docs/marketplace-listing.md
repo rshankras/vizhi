@@ -22,6 +22,14 @@ Every user-facing link — these fields, the three card buttons baked into the p
 
 ## Teaser card description — limit 120 characters
 
+2.4.0 draft, 119 characters — the product is now Vizhi for Claude Code (ask the PM to rename the listing), and iTerm2 is named:
+
+```
+Physical hardware controls for Claude Code in Terminal, iTerm2 or Windows Terminal on the MX Keypad or Creative Console
+```
+
+Previous (2.3.1):
+
 2.3.1 as submitted, 117 characters. The portal had held a 97-character teaser that named Apple Terminal only, which is wrong for a release whose main fix is on Windows. The device wording ("MX Keypad or Creative Console") is kept from it:
 
 ```
@@ -45,7 +53,24 @@ Markdown supported: **bold**, *cursive*, `-` lists, `1.` lists, `[links](url)`, 
 Works in Apple Terminal or Windows Terminal.
 ```
 
+For 2.4.0 change the last line to: `Works in Apple Terminal, iTerm2 or Windows Terminal.`
+
 ## Release notes — limit 1000 characters
+
+2.4.0 draft (count with `wc -m`, keep under 1000):
+
+```markdown
+**Vizhi for Claude Code is the new name of Claude Console.** Same plugin, same keys: your layout, live status and permissions carry over.
+
+**iTerm2 is supported.** Sessions in iTerm2 get their own keys, and every key reaches them. Use Terminal and iTerm2 together and each key goes to the right one. Import the iTerm2 layout from vizhi.dev/layouts.
+
+**Also in this release:**
+- The highlighted session bar follows the tab in front, and a pinned key wears a frame.
+- The layout files are named after the terminal they are for: VizhiClaudeCode-Terminal, -iTerm2, -WindowsTerminal. Same keys; no re-import needed.
+- The microphone prompt and the voice helper carry the new name.
+```
+
+Previous (2.3.1):
 
 2.3.1 (submitted 2026-09-24), 857 characters. Leads with the Windows uninstall fix Logitech named as the release blocker (#55), then includes the 2.2.3 engine fixes, which were never submitted on their own:
 
