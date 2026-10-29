@@ -10,6 +10,67 @@ Character counts below are `wc -m` with a UTF-8 locale, verified against the dra
 Read that file's **Lessons for next time** before pasting into the form — especially: never paste
 from a terminal window (invisible indent counts against the limit), use `pbcopy`.
 
+## 1.7.0 submission pack (prepared 2026-10-29)
+
+Paste these into the form. Counts are Python `len()` on the exact text; never paste from a terminal window.
+
+**Package:** `VizhiCodex_1.7.0.lplug4` (repo root, built from main `bf2edb9`), SHA-256
+`f3149199928c83c96c043c8ef2607e143b0ad678b8eddefd8f852e4ecb8ce781`, also attached to GitHub release
+[vizhi-codex/v1.7.0](https://github.com/rshankras/vizhi/releases/tag/vizhi-codex/v1.7.0). The yaml inside says
+`displayName: Vizhi for Codex`, `version: 1.7.0`, support https://vizhi.dev/faq/, homepage https://vizhi.dev/vizhi-codex/.
+
+### Teaser card — 112 characters (limit 120, 8 spare)
+
+```markdown
+Hardware controls for OpenAI Codex CLI in Apple Terminal, iTerm2 or Windows Terminal, on the MX Creative Keypad.
+```
+
+### Detail page description — 467 characters (limit 500, 33 spare)
+
+```markdown
+**Physical hardware controls for OpenAI Codex CLI. Press a button. Ship code.**
+
+- **A key per session** — 3 Codex sessions with project, state & context; press to focus
+- **Offline voice** — dictate prompts locally, no cloud
+- **Answer Codex** — amber on approval, red when risky
+- **One-press prompts** — Fix Bug, Write Tests, Review & more
+- **Screenshot** — capture a region into the conversation
+- **Git** — commit, push, PR
+
+Coexists with Vizhi for Claude Code.
+```
+
+### Release notes — 860 characters (limit 1000, 140 spare)
+
+```markdown
+iTerm2 support, and layouts named after the terminal they bind to.
+
+- **iTerm2 is supported** on macOS alongside Apple Terminal. Codex sessions in iTerm2 get their own keys, and every key reaches them; run Terminal and iTerm2 together and each key goes to the right one. Import the iTerm2 layout from vizhi.dev/layouts.
+- **The highlighted session bar follows the tab in front**, and a selected key wears a frame, so a selection and the tab in front never look the same.
+- **Layout files are named after the terminal they are for**: VizhiCodex-Terminal, VizhiCodex-iTerm2, VizhiCodex-WindowsTerminal. Same keys, so no re-import is needed; if you import a new file, delete the old profile afterwards.
+- **Windows:** every file is re-signed, and the signed hook launcher is rebuilt, so Codex asks once more to trust the hooks. The hooks themselves are unchanged.
+```
+
+### Notes to the reviewer (free text / the mail)
+
+```
+Vizhi for Codex 1.7.0. What changed: iTerm2 support on macOS alongside Apple Terminal (same engine change as Vizhi for Claude Code 2.4.0); the highlighted session bar follows the tab in front and a selected key wears a frame; the keypad layouts are named after the terminal they bind to (download from vizhi.dev/layouts).
+
+Suggested test focus on macOS: run codex in iTerm2 and in Terminal at the same time; trust the hooks once; press each session key; answer an approval with Yes and No; Dictate into the iTerm2 session; New Tab and New Codex while iTerm2 is in front. Importing a layout next to an older one adds a second profile in Options+; delete the old one afterwards.
+
+Windows: no behaviour change in the terminal driver; every file is re-signed (Certum, publisher Ravi Shankar S). The signed hook launcher is rebuilt, so Codex asks once more to trust the seven Vizhi hooks after the update; the hooks themselves are unchanged.
+
+Known and already fixed for the next update: a silent microphone input is transcribed as "you", and voice failure faces are hard to see on the key.
+```
+
+### Before you click submit
+
+- [ ] Windows smoke on the laptop: install over 1.6.2, trust the hooks when Codex asks, a session key, Yes, Dictate.
+- [x] macOS device pass on the packaged build (docs/release-2.4.0.md): iTerm2 and Terminal sessions, two approvals by key.
+- [x] GitHub release vizhi-codex/v1.7.0 published; vizhi.dev deployed.
+- [x] Package verifier passed; notarization accepted; 16 of 16 Windows files signed.
+- [ ] The carried-over teaser and description in the portal replaced with the text above.
+
 ## Auto-filled fields (from `LoupedeckPackage.yaml`)
 
 Read out of the uploaded `.lplug4`; the form fills them itself. To change any, edit
