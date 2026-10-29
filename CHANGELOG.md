@@ -1,3 +1,17 @@
+## Unreleased — a silent recording says "No sound", in red, instead of typing "you"
+
+### Fixed
+- **Voice keys no longer type "you" when the microphone hears nothing.** Whisper turns digital
+  silence into "you", so a dead input (a closed MacBook's built-in mic) typed that word into the
+  session. The helper already measured each recording; every voice key now acts on it and shows
+  **No sound**, the cue to check System Settings → Sound → Input. Find Chat, which already
+  refused silence, now says No sound too.
+- **Voice failures are visible on the key.** Dictate, Voice Draft and Go to Project drew their
+  failure words through the icon renderer, which draws the icon alone — so "No sound", "No helper",
+  "Mic denied" showed the ordinary idle key and only the beep hinted anything went wrong. A failure
+  now turns the whole key red with the words on it, for 8 s (was 2.5 s, too short to
+  notice) — the same hold Vizhi for Codex and Vizhi for ChatGPT use.
+
 ## Vizhi for ChatGPT [1.1.3] — 2026-10-06 — Vizhi Desktop is now Vizhi for ChatGPT
 
 ### Changed

@@ -37,6 +37,9 @@ namespace Loupedeck.ClaudeConsolePlugin
         /// <summary>Recorded fine, heard nothing usable. Speak up, or check the input device.</summary>
         internal const String NoSpeech = "No speech";
 
+        /// <summary>The recording was digital silence: the input device heard nothing at all. Check Sound › Input.</summary>
+        internal const String NoSound = "No sound";
+
         /// <summary>The speech model is still downloading. Try again shortly.</summary>
         internal const String ModelLoading = "Model loading";
 

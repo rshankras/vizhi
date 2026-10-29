@@ -37,6 +37,9 @@ namespace Loupedeck.ClaudeConsolePlugin
             var agent = new ClaudeCodeAdapter();
             IpcPaths.UseProduct(agent.ProductSlug);
             BridgeManager.Instance.Agent = agent;
+            // 2.5 s was too short to catch on the device: a red "No sound" came and went before the
+            // eye got back to the keypad. Same hold as the sibling products.
+            VoiceFailure.UseHold(8000);
 
             // The engine composes what the user should be told about an edit to their settings; only
             // this class can put it in front of them (Options+'s message centre, with a link) — #31.

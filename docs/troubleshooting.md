@@ -45,9 +45,10 @@ A session inside a container is invisible to the plugin altogether: its process 
 
 They only act on a permission prompt the plugin can see (a `PermissionRequest` hook payload). Three causes: live status is not turned on (press **Cost**, **Context** or **Activity** — Yes/No themselves don't switch it; see [The live status bridge](../README.md#the-live-status-bridge)); the keys are aimed at a **different session** from the one with the prompt (the highlighted session bar is the target — with nothing pinned it is the tab in front, so switch to the waiting tab or press its session key); or the session is waiting on something that is not a permission menu (a plain-text question, an idle prompt) — type into the session for those. This refusal is deliberate: guessing at a menu the plugin cannot see is how 2.0.1 approved the very thing the user pressed **No** on.
 
-## Voice: the key says "Mic denied", "No speech" or "Model loading"
+## Voice: the key says "Mic denied", "No sound", "No speech" or "Model loading"
 
 - **Mic denied** — the helper was refused the microphone. Allow **ClaudeVoiceHelper** in System Settings → Privacy & Security → Microphone, or reset and re-grant on the next press: `tccutil reset Microphone com.rshankar.claudeconsole.voicehelper`. A rebuilt or re-signed helper resets the grant (macOS ties it to the code signature); a stable Developer‑ID signature via `tools/voice/sign-and-notarize.sh` avoids this.
+- **No sound** — the recording was silence: the input device heard nothing. A MacBook's built-in mic is off while the lid is closed, so with the lid shut pick an external mic in System Settings → Sound → Input. (Before this check, a silent recording was typed as "you".)
 - **No speech** — it recorded but heard nothing usable.
 - **Model loading** — the speech model is still downloading; try again shortly.
 
