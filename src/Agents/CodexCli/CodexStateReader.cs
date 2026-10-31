@@ -59,6 +59,25 @@ namespace Loupedeck.ClaudeConsolePlugin.Agents
     /// </summary>
     internal static class CodexStateReader
     {
+        /// <summary>
+        /// The tool name recorded for a pending approval whose payload never arrived (#116). Never
+        /// shown on a key — faces render the risk, not the name — but every "is something pending"
+        /// check in the registry and the answer keys reads PendingTool, so it must be non-empty.
+        /// </summary>
+        internal const String UnknownTool = "(unknown)";
+
+        /// <summary>
+        /// Pending, graded routine. Amber on the answer keys: an answer is wanted and nothing says
+        /// it is destructive, which is all the plugin can honestly claim without the payload.
+        /// </summary>
+        private static void MarkPendingWithoutDetail(CodexSnapshot snap)
+        {
+            if (snap.Activity != "waiting") { return; }
+            snap.PendingTool = UnknownTool;
+            snap.PendingCommand = null;
+            snap.Risk = ApprovalRisk.Normal;
+        }
+
         /// <summary>Parse one state file's contents. Returns null only when there is nothing usable at all.</summary>
         public static CodexSnapshot Parse(String json)
         {
@@ -88,6 +107,13 @@ namespace Loupedeck.ClaudeConsolePlugin.Agents
                 if (!root.TryGetProperty("payload", out var p) || p.ValueKind != JsonValueKind.Object)
                 {
                     // A session with no readable detail is still a session. The grid shows the key.
+                    // And an approval with no readable detail is still an approval: the Windows
+                    // hook gives up on stdin after 1.5 s and records payload: null, the mac hook
+                    // records null for anything unreadable, and either way the event itself says
+                    // Codex is waiting. Yes and No only ever send Return or Escape, so they never
+                    // needed the tool name — a key that says waiting while the answer keys refuse
+                    // with "no pending approval" is the worst of both (#116).
+                    MarkPendingWithoutDetail(snap);
                     return snap;
                 }
 
@@ -112,9 +138,17 @@ namespace Loupedeck.ClaudeConsolePlugin.Agents
                 // Carrying PreToolUse's tool into the idle state would leave a stale amber key.
                 if (snap.Activity == "waiting")
                 {
-                    snap.PendingTool = toolName;
-                    snap.PendingCommand = command;
-                    snap.Risk = RiskClassifier.Classify(toolName, command, snap.ProjectDir);
+                    if (String.IsNullOrEmpty(toolName) && String.IsNullOrEmpty(command))
+                    {
+                        // A payload that arrived without its tool fields (#116) — same rule as no payload.
+                        MarkPendingWithoutDetail(snap);
+                    }
+                    else
+                    {
+                        snap.PendingTool = String.IsNullOrEmpty(toolName) ? UnknownTool : toolName;
+                        snap.PendingCommand = command;
+                        snap.Risk = RiskClassifier.Classify(toolName, command, snap.ProjectDir);
+                    }
                 }
 
                 return snap;
