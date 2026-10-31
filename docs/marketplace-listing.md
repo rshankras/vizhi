@@ -2,6 +2,77 @@
 
 The exact text entered in the Logitech Marketplace submission form ([marketplace.logitech.com/contribute](https://marketplace.logitech.com/contribute)). **The 2.3.1 copy below is current** (submitted 2026-09-24; the package and these texts as submitted are in `~/Downloads/Vizhi for Claude Code/ClaudeConsole-2.3.1-release/`); the 2.2.2, 2.2.1 and 2.2.0 release notes it replaced follow it, and the 2.0.x copy is kept at the bottom for reference. Process and packaging steps live in [SUBMISSION.md](../SUBMISSION.md).
 
+## 2.4.0 submission pack (prepared 2026-10-29)
+
+Paste these into the form at marketplace.logitech.com/contribute. Counts are Python `len()` on the exact text below;
+`wc -m` with a UTF-8 locale gives the same. Never paste from a terminal window — open this file in an editor and copy from there.
+
+**Package:** `ClaudeConsole_2.4.0.lplug4` (repo root, built from main `bf2edb9`), SHA-256
+`5de73cb7b92b6afb787fab67dff8135124f9bb227ba67c0276d3f3e2c7fffc32`, also attached to GitHub release
+[v2.4.0](https://github.com/rshankras/vizhi/releases/tag/v2.4.0). The yaml inside says `displayName: Vizhi for Claude Code`,
+`version: 2.4.0`, support https://vizhi.dev/faq/, homepage https://vizhi.dev/claude-console/, licence https://vizhi.dev/eula/.
+
+**Listing name:** the portal still says Claude Console. The package carries the new name; the listing itself is renamed on
+Logitech's side — ask the PM in the submission notes and in the accompanying mail (drafted in Apple Notes → Work · Clients).
+
+### Teaser card — 119 characters (limit 120, 1 spare)
+
+```markdown
+Physical hardware controls for Claude Code in Terminal, iTerm2 or Windows Terminal on the MX Keypad or Creative Console
+```
+
+### Detail page description — 490 characters (limit 500, 10 spare)
+
+```markdown
+**Physical hardware controls for Claude Code. Press a button. Ship code.**
+
+- **A key per session** - project & state on each; press to focus
+- **Answer prompts** - Yes approves, No rejects; amber when asked, red when risky
+- **Offline voice** - dictate a prompt or open a project by name
+- **Live status** - cost, context & activity keys, opt-in
+- **One-press prompts** - Fix Bug, Write Tests, Review
+- **Git** - commit, diff, push, PR
+
+Works in Apple Terminal, iTerm2 or Windows Terminal.
+```
+
+### Release notes — 873 characters (limit 1000, 127 spare)
+
+```markdown
+**Vizhi for Claude Code is the new name of Claude Console.** Same plugin, same keys: your layout, live status and permissions carry over.
+
+**iTerm2 is supported.** Sessions in iTerm2 get their own keys, and every key reaches them. Use Terminal and iTerm2 together and each key goes to the right one. Import the iTerm2 layout from vizhi.dev/layouts.
+
+**Also in this release:**
+- The highlighted session bar follows the tab in front, and a pinned key wears a frame.
+- The layout files are named after the terminal they are for: VizhiClaudeCode-Terminal, -iTerm2, -WindowsTerminal. Same keys; no re-import needed.
+- The microphone prompt and the voice helper carry the new name.
+- Windows: every file is re-signed. Session key presses no longer report "action failed" while the tab comes to the front, and a helper dated in the future no longer withholds Yes/No after install.
+```
+
+### Notes to the reviewer (free text / the mail)
+
+```
+Vizhi for Claude Code 2.4.0, formerly Claude Console. Please rename the listing to "Vizhi for Claude Code": the package metadata already carries the new name, and nothing changes for installed users (same internal name, settings, layouts and permissions).
+
+What changed: iTerm2 support on macOS alongside Apple Terminal; the highlighted session bar follows the tab in front and a pinned key wears a frame; the keypad layouts are named after the terminal they bind to (download from vizhi.dev/layouts); the microphone prompt carries the new name.
+
+Suggested test focus on macOS: run claude in iTerm2 and in Terminal at the same time; press each session key; answer a permission prompt with Yes and No; Dictate into the iTerm2 session; New Tab and New Claude while iTerm2 is in front. Importing a layout next to an older one adds a second profile in Options+; delete the old one afterwards.
+
+Windows: no behaviour change in the terminal driver; every file is re-signed (Certum, publisher Ravi Shankar S). Two fixes ship for Windows: a session key press no longer reports "action failed" while the tab comes to the front (the key reads Selecting), and a helper dated in the future no longer withholds Yes/No after install.
+
+Known and already fixed for 2.4.1: a silent microphone input is transcribed as "you", and voice failure faces are hard to see on the key. Known open: a denied microphone permission is reported only on the second press.
+```
+
+### Before you click submit
+
+- [x] Windows smoke on the laptop done 2026-10-29 (owner): install, a session key, Yes, Dictate.
+- [x] macOS device pass on the packaged build (docs/release-2.4.0.md).
+- [x] GitHub release v2.4.0 published; vizhi.dev deployed with the new name, iTerm2 and the renamed layouts.
+- [x] Package verifier passed; notarization accepted; 16 of 16 Windows files signed.
+- [x] Submitted 2026-10-31 (owner) at marketplace.logi.com/contribute; listing rename requested in the reviewer notes and the PM mail.
+- [ ] The carried-over teaser and description in the portal replaced with the text above (they come back stale).
+
 ## Auto-filled fields (from `LoupedeckPackage.yaml`)
 
 These are read out of the uploaded `.lplug4` — the form fills them itself. To change any of them, edit `src/package/metadata/LoupedeckPackage.yaml` and repack; don't look for a form field.
