@@ -1058,6 +1058,39 @@ namespace Loupedeck.ClaudeConsolePlugin
         private readonly Object _routingGate = new Object();
         private Int32 _routedActions;
 
+        // #89: three short presses on the Cost key inside a quarter of a second each spawned their
+        // own injection, and the console interleaved them into "/cost/cost/cost" plus one Return.
+        // Each helper is atomic on its own; they are not atomic with respect to each other. The
+        // same text pressed again inside this window is never intended, so the repeat is dropped
+        // with a log line. Only TEXT is guarded: two Escapes or two Returns in a row are a real
+        // gesture, so InjectKey stays as it is. A dropped repeat does not extend the window, so a
+        // deliberate second send after it lands.
+        internal Int32 RepeatPressWindowMs { get; set; } = 300;
+        internal Func<Int64> RepeatClock { get; set; } = () => Environment.TickCount64;
+        private readonly Object _repeatGate = new Object();
+        private String _lastInjectedText;
+        private Boolean _lastInjectedEnter;
+        private Int64 _lastInjectedAtMs = Int64.MinValue / 2;
+
+        private Boolean IsRepeatPress(String text, Boolean pressEnter)
+        {
+            var now = this.RepeatClock();
+            lock (_repeatGate)
+            {
+                var repeat = this.RepeatPressWindowMs > 0
+                    && String.Equals(text, _lastInjectedText, StringComparison.Ordinal)
+                    && pressEnter == _lastInjectedEnter
+                    && now - _lastInjectedAtMs < this.RepeatPressWindowMs;
+                if (!repeat)
+                {
+                    _lastInjectedText = text;
+                    _lastInjectedEnter = pressEnter;
+                    _lastInjectedAtMs = now;
+                }
+                return repeat;
+            }
+        }
+
         /// <summary>The slot whose selection is in flight, or 0. Painted as "Selecting" by the slot key.</summary>
         internal Int32 SelectingSlot => Volatile.Read(ref _selectingSlot);
 
@@ -1228,6 +1261,11 @@ namespace Loupedeck.ClaudeConsolePlugin
         /// </summary>
         public void InjectText(String text, Boolean pressEnter) => this.RunRoutedAction(() =>
         {
+            if (this.IsRepeatPress(text, pressEnter))
+            {
+                PluginLog.Info($"BridgeManager.InjectText: the same text again within {this.RepeatPressWindowMs} ms — repeat press ignored (#89)");
+                return;
+            }
             this.RefreshHelperHealth();
             _platform.InjectText(RoutingTty(), text, pressEnter);
         });
