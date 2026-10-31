@@ -673,6 +673,16 @@ All notable changes to Claude Console are documented here. Format based on
   qualify. On macOS a plain New Tab stays Cmd+T, following Terminal's own "new tabs open in"
   preference; the two session-starting keys carry a `cd` into the same command.
 
+## Vizhi for Codex [Unreleased]
+
+### Fixed
+- **Yes and No answer an approval whose details were lost on the way (#116).** When the hook could
+  not read Codex's payload (on Windows the hook gives up on stdin after 1.5 s; on macOS an
+  unreadable payload is recorded as null), the session key said waiting but the answer keys refused
+  with "no pending approval", because no tool name had arrived. Yes and No only ever send Return or
+  Escape, so the approval is now pending the moment the PermissionRequest event is, graded routine
+  (amber) when nothing says otherwise.
+
 ## Vizhi for Codex [1.7.0] — 2026-10-29
 
 ### Added

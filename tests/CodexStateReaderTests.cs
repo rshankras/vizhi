@@ -234,5 +234,59 @@ namespace Loupedeck.ClaudeConsolePlugin.Tests
             Assert.Equal("Bash", s.PendingTool);
             Assert.Equal(ApprovalRisk.High, s.Risk);
         }
+
+        /// <summary>
+        /// The Windows hook gives up on stdin after 1.5 s and records payload: null; the mac hook
+        /// records null for anything it cannot read. The event still says an approval is pending,
+        /// and Yes/No only send Return or Escape, so the lost detail must not switch the answer
+        /// keys off while the session key says waiting (#116).
+        /// </summary>
+        [Fact]
+        public void A_permission_request_with_no_payload_is_still_a_pending_approval()
+        {
+            var s = CodexStateReader.Parse(Envelope("PermissionRequest", "null"));
+
+            Assert.Equal("waiting", s.Activity);
+            Assert.Equal(CodexStateReader.UnknownTool, s.PendingTool);
+            Assert.Null(s.PendingCommand);
+            Assert.Equal(ApprovalRisk.Normal, s.Risk);
+        }
+
+        [Fact]
+        public void A_permission_request_whose_payload_lost_its_tool_fields_is_still_pending_and_routine()
+        {
+            var s = CodexStateReader.Parse(Envelope("PermissionRequest",
+                """{"cwd":"/Users/dev/project","session_id":"01a01324-6044-7bb3-8455-6a9b96c55a3c"}"""));
+
+            Assert.Equal("waiting", s.Activity);
+            Assert.Equal(CodexStateReader.UnknownTool, s.PendingTool);
+            Assert.Equal(ApprovalRisk.Normal, s.Risk);
+            Assert.Equal("/Users/dev/project", s.ProjectDir);
+        }
+
+        /// <summary>A command with no tool name still grades by the command, as it always did.</summary>
+        [Fact]
+        public void A_command_without_a_tool_name_keeps_its_own_grade()
+        {
+            var s = CodexStateReader.Parse(Envelope("PermissionRequest",
+                """{"cwd":"/Users/dev/project","tool_input":{"command":"rm -rf /Users/dev/project"}}"""));
+
+            Assert.Equal(CodexStateReader.UnknownTool, s.PendingTool);
+            Assert.Equal(ApprovalRisk.High, s.Risk);
+        }
+
+        /// <summary>Only an approval is pending; a lost payload on any other event carries no tool.</summary>
+        [Theory]
+        [InlineData("PreToolUse", "busy")]
+        [InlineData("Stop", "done")]
+        [InlineData("SessionStart", "done")]
+        public void A_lost_payload_on_any_other_event_carries_no_pending_tool(String evt, String activity)
+        {
+            var s = CodexStateReader.Parse(Envelope(evt, "null"));
+
+            Assert.Equal(activity, s.Activity);
+            Assert.Null(s.PendingTool);
+            Assert.Equal(ApprovalRisk.None, s.Risk);
+        }
     }
 }
