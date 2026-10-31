@@ -599,6 +599,11 @@ All notable changes to Claude Console are documented here. Format based on
   now turns the whole key red with the words on it, for 8 s (was 2.5 s, too short to
   notice) — the same hold Vizhi for Codex and Vizhi for ChatGPT use.
  Both products: the check and the face live in the engine (#169, #167).
+- **A typing key pressed again at once types once (#89).** Three short presses on Cost within a
+  quarter of a second each sent `/cost`, and the console interleaved the three into
+  `/cost/cost/cost` with one Return, which Claude Code read as an unknown command. The same
+  text pressed again within 300 ms is now dropped with a log line; a different text, a draft
+  after a send, and keys such as Return and Escape are never held back. Both products.
 
 ## [2.4.0] — 2026-10-29
 
