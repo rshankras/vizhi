@@ -1,0 +1,11 @@
+# Normalise line endings so a Windows checkout cannot hand Git Bash or WSL a script with CRLF (#92).
+* text=auto
+*.sh text eol=lf
+*.py text eol=lf
+*.ps1 text eol=lf
+
+# Binary payloads and packages: never touch their bytes.
+*.lp5 binary
+*.lplug4 binary
+*.png binary
+*.ict binary
