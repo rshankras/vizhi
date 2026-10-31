@@ -13,8 +13,8 @@
     <AssemblyName>ClaudeConsolePlugin.Tests</AssemblyName>
     <RootNamespace>Loupedeck.ClaudeConsolePlugin.Tests</RootNamespace>
 
-    <!-- The plugin is macOS-only (osascript, TCC, Logi Plugin Service), so the Unix file-mode
-         APIs the permission tests use are always supported here. -->
+    <!-- The suite runs on macOS and Windows (since #56); the Unix file-mode tests split on
+         platform explicitly, so the CA1416 platform-compatibility analyzer only adds noise here. -->
     <NoWarn>$(NoWarn);CA1416</NoWarn>
 
     <!-- Keep test output out of the plugin's bin/ tree (which gets packaged into the .lplug4). -->
