@@ -70,6 +70,7 @@ Known and already fixed for 2.4.1: a silent microphone input is transcribed as "
 - [x] macOS device pass on the packaged build (docs/release-2.4.0.md).
 - [x] GitHub release v2.4.0 published; vizhi.dev deployed with the new name, iTerm2 and the renamed layouts.
 - [x] Package verifier passed; notarization accepted; 16 of 16 Windows files signed.
+- [x] Submitted 2026-10-31 (owner) at marketplace.logi.com/contribute; listing rename requested in the reviewer notes and the PM mail.
 - [ ] The carried-over teaser and description in the portal replaced with the text above (they come back stale).
 
 ## Auto-filled fields (from `LoupedeckPackage.yaml`)

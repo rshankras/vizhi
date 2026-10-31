@@ -68,7 +68,7 @@ Windows smoke on the laptop done 2026-10-29 (owner), both packages. Not run: the
 
 ## After the cut
 
-- **Logitech:** submit both packages. Ask the PM to rename the **listing** to Vizhi for Claude
+- **Logitech:** both packages submitted 2026-10-31 (owner, marketplace.logi.com/contribute). Ask the PM to rename the **listing** to Vizhi for Claude
   Code and say so in the mail — QA's reports all say Claude Console. Listing copy
   (`docs/marketplace-listing.md`) names Apple Terminal, iTerm2 and Windows Terminal now.
 - **vizhi.dev — READY, not deployed:** branch `release/2.4.0-iterm2-and-rename` in

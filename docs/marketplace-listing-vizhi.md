@@ -69,6 +69,7 @@ Known and already fixed for the next update: a silent microphone input is transc
 - [x] macOS device pass on the packaged build (docs/release-2.4.0.md): iTerm2 and Terminal sessions, two approvals by key.
 - [x] GitHub release vizhi-codex/v1.7.0 published; vizhi.dev deployed.
 - [x] Package verifier passed; notarization accepted; 16 of 16 Windows files signed.
+- [x] Submitted 2026-10-31 (owner) at marketplace.logi.com/contribute.
 - [ ] The carried-over teaser and description in the portal replaced with the text above.
 
 ## Auto-filled fields (from `LoupedeckPackage.yaml`)
